@@ -397,12 +397,6 @@ class ExhibitionService
                         ]);
                         $sections[] = Section::query()->find($item['id']);
                     }
-                    else{
-                        $sec = Section::query()->find($item['id']);
-                        $message = 'You hava already entered this '.$sec['name'].' section';
-                        $code = 400;
-                        return ['data' => [], 'message' => $message, 'code' => $code];
-                    }
                 }
                 DB::commit();
                 $data[] = [$exhibition, $sections];
