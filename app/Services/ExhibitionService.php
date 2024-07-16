@@ -818,7 +818,7 @@ class ExhibitionService
         DB::beginTransaction();
         try {
             $title = $request['title'];
-            $exhibition=Exhibition::query()->where('title', 'LIKE', '%'.$title.'%')->get();
+            $exhibition=Exhibition::query()->where('title', 'LIKE', '%'.$title.'%')->with('sections.section')->get();
             DB::commit();
             $data = $exhibition;
             $message = 'The exhibition search was successfully';
@@ -919,7 +919,7 @@ class ExhibitionService
 
         DB::beginTransaction();
         try {
-            $exhibition=Exhibition::query()->where('status',3)->with('sections')->get();
+            $exhibition=Exhibition::query()->where('status',3)->with('sections.section')->get();
             DB::commit();
             $data = $exhibition;
             $message = 'The available exhibitions was shown successfully.';
@@ -940,7 +940,7 @@ class ExhibitionService
     {
         DB::beginTransaction();
         try {
-            $exhibition = Exhibition::query()->where('status', 2)->with('sections')->get();
+            $exhibition = Exhibition::query()->where('status', 2)->with('sections.section')->get();
             DB::commit();
             $data = $exhibition;
             $message = 'The available companies exhibitions was shown successfully.';
