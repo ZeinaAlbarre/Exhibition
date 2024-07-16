@@ -251,6 +251,58 @@ class ExhibitionService
         }
     }
 
+    public function showUpdateExhibitions(){
+        DB::beginTransaction();
+        try {
+            $employee=auth()->user();
+            $employeeEx=Exhibition_employee::query()->where('user_id',$employee['id'])->get();
+            $exhibitions=[];
+            if($employeeEx){
+                foreach ($employeeEx as $item){
+                    $exhibitionId=Exhibition::query()->where('id',$item['exhibition_id'])->first();
+                    if($exhibitionId){
+                        $exhibition=Exhibition_revision::query()->where('id',$exhibitionId['id'])->first();
+                        if($exhibition) $exhibitions[]=$exhibition;
+                    }
+                }
+            }
+
+            DB::commit();
+            $data=$exhibitions;
+            $message='The modified exhibitions were successfully displayed. ';
+            $code = 200;
+
+        }catch (\Exception $e) {
+            DB::rollback();
+            $data=[];
+            $message = 'Error during showed exhibitions. Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+
+    }
+
+    public function showUpdateExhibition($id){
+        DB::beginTransaction();
+        try {
+           // $exhibition=Exhibition::query()->find($id);
+            $modifiedExhibition=Exhibition_revision::query()->where('id',$id)->first();
+            DB::commit();
+           // $data[]=[$exhibition,$modifiedExhibition];
+            $data=$modifiedExhibition;
+            $message='Exhibition showed successfully. ';
+            $code = 200;
+
+        }catch (\Exception $e) {
+            DB::rollback();
+            $data=[];
+            $message = 'Error during showed exhibition. Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+
+    }
+
     public function acceptExhibitionUpdate($id):array
     {
         DB::beginTransaction();
@@ -287,7 +339,7 @@ class ExhibitionService
 
         }catch (\Exception $e) {
             DB::rollback();
-            $message = 'Error during updating exhibition. Please try again ';
+            $message = 'Error during accept exhibition update. Please try again ';
             $code = 500;
             return ['data' => [], 'message' => $message, 'code' => $e->getCode()];
         }
@@ -316,7 +368,7 @@ class ExhibitionService
 
         }catch (\Exception $e) {
             DB::rollback();
-            $message = 'Error during updating exhibition. Please try again ';
+            $message = 'Error during reject exhibition update. Please try again ';
             $code = 500;
             return ['data' => [], 'message' => $message, 'code' => $e->getCode()];
         }
@@ -893,11 +945,13 @@ class ExhibitionService
         try {
             $exhibition=[];
             $exhibition_section=Exhibition_section::query()->where('section_id',$section_id)->get();
-            foreach($exhibition_section as $item){
-                $exhibition_id=$item->exhibition_id;
-                $exhibit=Exhibition::query()->where('id', $exhibition_id)->first();
-                if(!is_null($exhibit)){
-                    $exhibition[] = $exhibit;
+            if($exhibition_section){
+                foreach($exhibition_section as $item){
+                    $exhibition_id=$item->exhibition_id;
+                    $exhibit=Exhibition::query()->where('id', $exhibition_id)->first();
+                    if(!is_null($exhibit)){
+                        $exhibition[] = $exhibit;
+                    }
                 }
             }
             DB::commit();

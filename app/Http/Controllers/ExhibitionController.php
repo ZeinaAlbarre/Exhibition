@@ -100,6 +100,32 @@ class ExhibitionController extends Controller
 
     }
 
+    public function showUpdateExhibitions(): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->showUpdateExhibitions();
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+
+    }
+
+    public function showUpdateExhibition($id): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->showUpdateExhibition($id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+
+    }
+
     public function acceptExhibitionUpdate($id): JsonResponse
     {
         $data=[];
