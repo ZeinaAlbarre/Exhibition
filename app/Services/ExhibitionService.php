@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
-use App\Mail\AcceptCompanyemail;
 use App\Mail\AcceptExhibitionEmail;
 use App\Mail\RejectExhibitionEmail;
 use App\Models\Company;
-use App\Models\Company_stand;
 use App\Models\Employee;
 use App\Models\Exhibition;
 use App\Models\Exhibition_company;
@@ -14,12 +12,15 @@ use App\Models\Exhibition_employee;
 use App\Models\Exhibition_organizer;
 use App\Models\Exhibition_revision;
 use App\Models\Exhibition_section;
+use App\Models\Exhibition_sponser;
 use App\Models\Media;
 use App\Models\Scheduale;
 use App\Models\Section;
+use App\Models\Sponser;
 use App\Models\Stand;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Carbon;
 use Spatie\Permission\Models\Role;
 
 use Illuminate\Support\Facades\Auth;
@@ -190,56 +191,98 @@ class ExhibitionService
     {
         DB::beginTransaction();
         try{
+            $user=Auth::user();
             $exhibition=Exhibition::query()->find($id);
-            $exhibitionRevision=Exhibition_revision::query()->find($id);
             $titleExists = Exhibition::query()->where('title', $request['title'])->where('id', '!=', $id)->exists();
-            $titleRExists = Exhibition_revision::query()->where('title', $request['title'])->where('id', '!=', $id)->exists();
-            if($exhibitionRevision){
-                DB::commit();
-                $data=[];
-                $message='Please wait until your previous modification is accepted, then submit your new modification. ';
-                $code = 400;
-            }
-            else if (($request['title'] != $exhibition['title']  && $titleExists ) ||  $titleRExists )
-            {
-                DB::commit();
-                $data=[];
-                $message='The title has already been taken.';
-                $code = 400;
-            }
-            else if (($request['title'] != $exhibition['title'] && !$titleExists)|| $request['title'] == $exhibition['title']){
+            if($user->hasRole('employee')){
+                if($request['title'] != $exhibition['title'] && $titleExists){
+                    DB::commit();
+                    $data = [];
+                    $message = 'The title has already been taken.';
+                    $code = 400;
+                }
+                else if (($request['title'] != $exhibition['title'] && !$titleExists) || $request['title'] == $exhibition['title']){
 
-                $exhibitionR=Exhibition_revision::query()->create([
-                    'id'=>$exhibition['id'],
-                    'title'=>$request['title'],
-                    'body'=>$request['body'],
-                    'start_date'=>$request['start_date'],
-                    'end_date'=>$request['end_date'],
-                    'time'=>$request['time'],
-                    'price'=>$request['price'],
-                    'location'=>$request['location'],
-                    'status'=>$exhibition['status']
-                ]);
-                if(request()->has('number_of_stands')){
-                    $exhibitionR['number_of_stands'] = $request['number_of_stands'];
-                    $exhibitionR->save();
+                    $exhibition->update([
+                        'title' => $request['title'],
+                        'body' => $request['body'],
+                        'start_date' => $request['start_date'],
+                        'end_date' => $request['end_date'],
+                        'time' => $request['time'],
+                        'price' => $request['price'],
+                        'location' => $request['location'],
+                        'status' => $exhibition['status']
+                    ]);
+                    if (request()->has('number_of_stands')) {
+                        $exhibition['number_of_stands'] = $request['number_of_stands'];
+                        $exhibition->save();
+                    }
+                    if (request()->hasFile('cover_img')) {
+                        $img = Str::random(32) . "." . time() . '.' . request()->cover_img->getClientOriginalExtension();
+                        $exhibition['cover_img'] = $img;
+                        Storage::disk('public')->put($img, file_get_contents($request['cover_img']));
+                        $exhibition->save();
+                    }
+                    if (request()->hasFile('exhibition_map')) {
+                        $img = Str::random(32) . "." . time() . '.' . request()->cover_img->getClientOriginalExtension();
+                        $exhibition['exhibition_map'] = $img;
+                        Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
+                        $exhibition->save();
+                    }
+                    DB::commit();
+                    $data = $exhibition;
+                    $message = 'Exhibition updated successfully.';
+                    $code = 400;
                 }
-                if(request()->hasFile('cover_img')){
-                    $img=Str::random(32).".".time().'.'.request()->cover_img->getClientOriginalExtension();
-                    $exhibitionR['cover_img']=$img;
-                    Storage::disk('public')->put($img, file_get_contents($request['cover_img']));
-                    $exhibitionR->save();
+            }
+            else {
+
+                $exhibitionRevision = Exhibition_revision::query()->find($id);
+                $titleRExists = Exhibition_revision::query()->where('title', $request['title'])->where('id', '!=', $id)->exists();
+                if ($exhibitionRevision) {
+                    DB::commit();
+                    $data = [];
+                    $message = 'Please wait until your previous modification is accepted, then submit your new modification. ';
+                    $code = 400;
+                } else if (($request['title'] != $exhibition['title'] && $titleExists) || $titleRExists) {
+                    DB::commit();
+                    $data = [];
+                    $message = 'The title has already been taken.';
+                    $code = 400;
+                } else if (($request['title'] != $exhibition['title'] && !$titleExists) || $request['title'] == $exhibition['title']) {
+
+                    $exhibitionR = Exhibition_revision::query()->create([
+                        'id' => $exhibition['id'],
+                        'title' => $request['title'],
+                        'body' => $request['body'],
+                        'start_date' => $request['start_date'],
+                        'end_date' => $request['end_date'],
+                        'time' => $request['time'],
+                        'price' => $request['price'],
+                        'location' => $request['location'],
+                        'status' => $exhibition['status']
+                    ]);
+                    if (request()->has('number_of_stands')) {
+                        $exhibitionR['number_of_stands'] = $request['number_of_stands'];
+                        $exhibitionR->save();
+                    }
+                    if (request()->hasFile('cover_img')) {
+                        $img = Str::random(32) . "." . time() . '.' . request()->cover_img->getClientOriginalExtension();
+                        $exhibitionR['cover_img'] = $img;
+                        Storage::disk('public')->put($img, file_get_contents($request['cover_img']));
+                        $exhibitionR->save();
+                    }
+                    if (request()->hasFile('exhibition_map')) {
+                        $img = Str::random(32) . "." . time() . '.' . request()->cover_img->getClientOriginalExtension();
+                        $exhibitionR['exhibition_map'] = $img;
+                        Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
+                        $exhibitionR->save();
+                    }
+                    DB::commit();
+                    $data = $exhibitionR;
+                    $message = 'Your amendment has been sent to the official in charge of the exhibition. Please wait for the modifications to be accepted. ';
+                    $code = 200;
                 }
-                if(request()->hasFile('exhibition_map')){
-                    $img=Str::random(32).".".time().'.'.request()->cover_img->getClientOriginalExtension();
-                    $exhibitionR['exhibition_map']=$img;
-                    Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
-                    $exhibitionR->save();
-                }
-                DB::commit();
-                $data=$exhibitionR;
-                $message='Your amendment has been sent to the official in charge of the exhibition. Please wait for the modifications to be accepted. ';
-                $code = 200;
             }
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
@@ -254,8 +297,8 @@ class ExhibitionService
     public function showUpdateExhibitions(){
         DB::beginTransaction();
         try {
-            $employee=auth()->user();
-            $employeeEx=Exhibition_employee::query()->where('user_id',$employee['id'])->get();
+            $employee=Auth::user();
+            $employeeEx=Exhibition_employee::query()->where('user_id',$employee->id)->get();
             $exhibitions=[];
             if($employeeEx){
                 foreach ($employeeEx as $item){
@@ -269,7 +312,8 @@ class ExhibitionService
 
             DB::commit();
             $data=$exhibitions;
-            $message='The modified exhibitions were successfully displayed. ';
+            if(!$exhibitions) $message='There are no exhibition request. ';
+            else $message='The modified exhibitions were successfully displayed. ';
             $code = 200;
 
         }catch (\Exception $e) {
@@ -385,8 +429,6 @@ class ExhibitionService
                 $code = 404;
             } else {
                 $section_id = $request['sections'];
-                $dataTimeNow = now();
-                $sectionsData = [];
                 $sections = [];
                 foreach ($section_id as $item) {
                     $exhibition_section = Exhibition_section::query()->where('exhibition_id', $id)->where('section_id', $item['id'])->first();
@@ -402,15 +444,44 @@ class ExhibitionService
                 $data[] = [$exhibition, $sections];
                 $message = 'Exhibition section added successfully';
                 $code = 200;
-                return ['data' => $data, 'message' => $message, 'code' => $code];
             }
         } catch (\Exception $e) {
             DB::rollback();
             $data = [];
             $message = 'Error during adding exhibition section. Please try again ';
             $code = 500;
-            return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
         }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+    }
+
+    public function showExhibitionSection($section_id){
+        DB::beginTransaction();
+        try {
+            $exhibition=[];
+            $exhibition_section=Exhibition_section::query()->where('section_id',$section_id)
+                 ->orderBy('created_at','desc')->get();
+            if($exhibition_section){
+                foreach($exhibition_section as $item){
+                    $exhibition_id=$item->exhibition_id;
+                    $exhibit=Exhibition::query()->where('id', $exhibition_id)->first();
+                    if(!is_null($exhibit)){
+                        $exhibition[] = $exhibit;
+                    }
+                }
+            }
+            DB::commit();
+            $data = $exhibition;
+            $message = 'The section exhibitions was shown successfully.';
+            $code = 200;
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing exhibitions. Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+
     }
 
     public function addExhibitionMedia($request,$exhibition_id)
@@ -475,11 +546,12 @@ class ExhibitionService
         try {
             $user=Auth::user()->id;
             $exhibition=[];
-            $exhibitionOrganizer=Exhibition_organizer::query()->where('user_id',$user)->get();
+            $exhibitionOrganizer=Exhibition_organizer::query()->where('user_id',$user)
+                ->orderBy('created_at','desc')->get();
             if($exhibitionOrganizer) {
                 foreach ($exhibitionOrganizer as $i) {
                     $exhibitionID = $i->exhibition_id;
-                    $exhibit = Exhibition::query()->where('id', $exhibitionID)->where('status', 1)->first();
+                    $exhibit = Exhibition::query()->where('id', $exhibitionID)->whereIn('status', [1,2,3])->first();
                     if (!is_null($exhibit)) {
                         $exhibition[] = $exhibit;
                     }
@@ -830,25 +902,24 @@ class ExhibitionService
         try {
             $user = Auth::user()->id;
             $exhibition = [];
-            $exhibitionEmployee = Exhibition_employee::query()->where('user_id', $user)->get();
-            if (!is_null($exhibitionEmployee)) {
+            $exhibitionEmployee = Exhibition_employee::query()->where('user_id', $user)
+                ->orderBy('created_at','desc')->get();
+            if($exhibitionEmployee) {
                 foreach ($exhibitionEmployee as $item) {
                     $exhibitionID = $item->exhibition_id;
-                    $exhibit=Exhibition::query()->where('id', $exhibitionID)->where('status', 1)->first();
-                    if(!is_null($exhibit)){
+                    $exhibit = Exhibition::query()->where('id', $exhibitionID)->whereIn('status', [1, 2, 3])->first();
+                    if (!is_null($exhibit)) {
                         $exhibition[] = $exhibit;
                     }
                 }
-                DB::commit();
-                $data = $exhibition;
-                $message = 'Exhibitions have been successfully displayed. ';
-                $code = 200;
-                return ['data' => $data, 'message' => $message, 'code' => $code];
-            } else {
-                $message = 'There is no exhibition Request. ';
-                $code = 200;
-                return ['data' => [], 'message' => $message, 'code' => $code];
             }
+            DB::commit();
+            $data = $exhibition;
+            $code=200;
+            if($data) $message = 'Exhibitions have been successfully displayed. ';
+            else $message = 'There are no exhibition. ';
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
         } catch (\Exception $e) {
             DB::rollback();
             $data = [];
@@ -859,14 +930,111 @@ class ExhibitionService
         }
     }
 
+    public function showExhibitionStands($exhibition_id): array
+    {
+        DB::beginTransaction();
+
+        try {
+            $stands = Stand::where('exhibition_id', $exhibition_id)->get();
+            DB::commit();
+            $data = $stands;
+            $message = 'stands  have been successfully show.';
+            $code = 200;
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error . Please try again.';
+            $code = 500;
+        }
+
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+
+    }
+
     public function searchExhibition($request){
 
         DB::beginTransaction();
         try {
             $title = $request['title'];
-            $exhibition=Exhibition::query()->where('title', 'LIKE', '%'.$title.'%')->with('sections.section')->get();
-            DB::commit();
-            $data = $exhibition;
+            $user=Auth::user();
+            if($user->hasRole('company')){
+                $exhibition=Exhibition::query()->whereIn('status',[2,3])
+                    ->where('title', 'LIKE', '%'.$title.'%')
+                    ->with('sections.section:id,name')
+                    ->orderBy('created_at','desc')->get();
+                DB::commit();
+                $data = $exhibition->toArray();
+                if (!empty($data)) {
+                    foreach ($data as &$exhibit) {
+                        if (isset($exhibit['sections']) && is_array($exhibit['sections'])) {
+                            foreach ($exhibit['sections'] as &$section) {
+                                $section = $section['section'];
+                            }
+                        } else {
+                            $exhibit['sections'] = [];
+                        }
+                    }
+                }
+            }
+            else if($user->hasRole('visitor')){
+                $exhibition=Exhibition::query()->where('status',3)
+                    ->where('title', 'LIKE', '%'.$title.'%')
+                    ->with('sections.section:id,name')
+                    ->orderBy('created_at','desc')->get();
+                DB::commit();
+                $data = $exhibition->toArray();
+                if (!empty($data)) {
+                    foreach ($data as &$exhibit) {
+                        if (isset($exhibit['sections']) && is_array($exhibit['sections'])) {
+                            foreach ($exhibit['sections'] as &$section) {
+                                $section = $section['section'];
+                            }
+                        } else {
+                            $exhibit['sections'] = [];
+                        }
+                    }
+                }
+            }
+            else if($user->hasRole('employee')){
+                $employee_exhibitions=Exhibition_employee::query()->where('user_id',$user->id)->pluck('exhibition_id');
+                $exhibition=Exhibition::query()->whereIn('id',$employee_exhibitions)
+                    ->where('title', 'LIKE', '%'.$title.'%')
+                    ->with('sections.section:id,name')
+                    ->orderBy('created_at','desc')->get();
+                DB::commit();
+                $data = $exhibition->toArray();
+                if (!empty($data)) {
+                    foreach ($data as &$exhibit) {
+                        if (isset($exhibit['sections']) && is_array($exhibit['sections'])) {
+                            foreach ($exhibit['sections'] as &$section) {
+                                $section = $section['section'];
+                            }
+                        } else {
+                            $exhibit['sections'] = [];
+                        }
+                    }
+                }
+            }
+            else if($user->hasRole('organizer')){
+                $organizer_exhibitions=Exhibition_organizer::query()->where('user_id',$user->id)->pluck('exhibition_id');
+                $exhibition=Exhibition::query()->whereIn('id',$organizer_exhibitions)
+                    ->where('title', 'LIKE', '%'.$title.'%')
+                    ->with('sections.section:id,name')
+                    ->orderBy('created_at','desc')->get();
+                DB::commit();
+                $data = $exhibition->toArray();
+                if (!empty($data)) {
+                    foreach ($data as &$exhibit) {
+                        if (isset($exhibit['sections']) && is_array($exhibit['sections'])) {
+                            foreach ($exhibit['sections'] as &$section) {
+                                $section = $section['section'];
+                            }
+                        } else {
+                            $exhibit['sections'] = [];
+                        }
+                    }
+                }
+            }
             $message = 'The exhibition search was successfully';
             $code = 200;
             return ['data' => $data, 'message' => $message, 'code' => $code];
@@ -881,97 +1049,92 @@ class ExhibitionService
         }
     }
 
-    public function showExhibitions(){
+    public function showExhibition($id) {
         DB::beginTransaction();
         try {
-            $exhibition=Exhibition::query()->with('sections.section')->get();
-            if(!$exhibition){
-                DB::commit();
-                $data = [];
-                $message = 'There are no exhibition.';
-                $code = 200;
-            }else{
-                DB::commit();
-                $data = [];
-                $message = 'The exhibitions was shown successfully.';
-                $code = 200;
-            }
-            return ['data' => $exhibition, 'message' => $message, 'code' => $code];
+            $exhibition = Exhibition::query()
+                ->with([
+                    'sections.section:id,name',
+                    'media',
+                    'exhibition_sponser.sponser:id,img,name'
+                ])
+                ->find($id);
+            if($exhibition) {
 
-        } catch (\Exception $e) {
-            DB::rollback();
-            $data = [];
-            $message = 'Error during showing exhibitions. Please try again ';
-            $code = 500;
-            return ['data' => $data, 'message' => $message, 'code' => $code];
-        }
-    }
-
-    public function showExhibition($id){
-        DB::beginTransaction();
-        try {
-            $exhibition=Exhibition::query()->with('sections.section')->with('media')->with('exhibition_sponser.sponser')->find($id);
-            if(!is_null($exhibition)){
                 DB::commit();
-                $data = $exhibition;
+                $data = $exhibition->toArray();
+                if (!empty($data)) {
+                    foreach ($data as &$data) {
+                        if (isset($data['sections']) && is_array($data['sections'])) {
+                            foreach ($data['sections'] as &$section) {
+                                $section = $section['section'];
+                            }
+                        } else {
+                            $data['sections'] = [];
+                        }
+
+                        if (isset($data['exhibition_sponser']) && is_array($data['exhibition_sponser'])) {
+
+                            foreach ($data['exhibition_sponser'] as &$sponsor) {
+                                $sponsor = $sponsor['sponser'];
+                            }
+                        } else {
+                            $data['exhibition_sponser'] = [];
+                        }
+                    }
+                }
+
+
                 $message = 'The exhibition was shown successfully.';
                 $code = 200;
             }
-            else{
+            else {
                 DB::commit();
                 $data = [];
                 $message = 'invalid id';
                 $code = 400;
             }
-            return ['data' => $data, 'message' => $message, 'code' => $code];
 
+            return ['data' => $data, 'message' => $message, 'code' => $code];
         } catch (\Exception $e) {
             DB::rollback();
             $data = [];
-            $message = 'Error during showing exhibition. Please try again ';
+            $message = 'Error during showing exhibition. Please try again';
             $code = 500;
             return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
         }
-    }
-
-    public function showExhibitionSection($section_id){
-        DB::beginTransaction();
-        try {
-            $exhibition=[];
-            $exhibition_section=Exhibition_section::query()->where('section_id',$section_id)->get();
-            if($exhibition_section){
-                foreach($exhibition_section as $item){
-                    $exhibition_id=$item->exhibition_id;
-                    $exhibit=Exhibition::query()->where('id', $exhibition_id)->first();
-                    if(!is_null($exhibit)){
-                        $exhibition[] = $exhibit;
-                    }
-                }
-            }
-            DB::commit();
-            $data = $exhibition;
-            $message = 'The section exhibitions was shown successfully.';
-            $code = 200;
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            $data = [];
-            $message = 'Error during showing exhibitions. Please try again ';
-            $code = 500;
-        }
-        return ['data' => $data, 'message' => $message, 'code' => $code];
-
     }
 
     public function showAvailableExhibition(){
 
         DB::beginTransaction();
         try {
-            $exhibition=Exhibition::query()->where('status',3)->with('sections.section')->get();
-            DB::commit();
-            $data = $exhibition;
-            $message = 'The available exhibitions was shown successfully.';
-            $code = 200;
+            $exhibition=Exhibition::query()->where('status',3)
+                ->with('sections.section:id,name')
+                ->orderBy('created_at','desc')->get();
+            if($exhibition) {
+                DB::commit();
+                $data = $exhibition->toArray();
+                if (!empty($data)) {
+                    foreach ($data as &$exhibit) {
+                        if (isset($exhibit['sections']) && is_array($exhibit['sections'])) {
+                            foreach ($exhibit['sections'] as &$section) {
+                                $section = $section['section'];
+                            }
+                        } else {
+                            $exhibit['sections'] = [];
+                        }
+                    }
+                }
+                $message = 'The available companies exhibitions was shown successfully.';
+                $code = 200;
+            }
+            else{
+                DB::commit();
+                $data=[];
+                $message = 'There are no avaliable exhibition. ';
+                $code = 200;
+            }
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
         } catch (\Exception $e) {
@@ -988,11 +1151,32 @@ class ExhibitionService
     {
         DB::beginTransaction();
         try {
-            $exhibition = Exhibition::query()->where('status', 2)->with('sections.section')->get();
-            DB::commit();
-            $data = $exhibition;
-            $message = 'The available companies exhibitions was shown successfully.';
-            $code = 200;
+            $exhibition = Exhibition::query()->where('status', 2)
+                ->with('sections.section:id,name')
+                ->orderBy('created_at','desc')->get();
+            if($exhibition) {
+                DB::commit();
+                $data = $exhibition->toArray();
+                if (!empty($data)) {
+                    foreach ($data as &$exhibit) {
+                        if (isset($exhibit['sections']) && is_array($exhibit['sections'])) {
+                            foreach ($exhibit['sections'] as &$section) {
+                                $section = $section['section'];
+                            }
+                        } else {
+                            $exhibit['sections'] = [];
+                        }
+                    }
+                }
+                $message = 'The available companies exhibitions was shown successfully.';
+                $code = 200;
+            }
+            else{
+                DB::commit();
+                $data=[];
+                $message = 'There are no avaliable exhibition. ';
+                $code = 200;
+            }
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
         } catch (\Exception $e) {
@@ -1000,8 +1184,7 @@ class ExhibitionService
             $data = [];
             $message = 'Error during showing available exhibition. Please try again ';
             $code = 500;
-            return ['data' => $data, 'message' => $message, 'code' => $code];
-
+            return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
         }
     }
 
@@ -1067,6 +1250,151 @@ class ExhibitionService
             $code = 500;
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
+        }
+    }
+
+    public function addSponser($request, $exhibition_id): array
+    {
+        $data = [];
+        try {
+            $img = Str::random(32) . "." . time() . "." . $request->img->getClientOriginalExtension();
+            $sponser = Sponser::create([
+                'name' => $request['name'],
+                'img' => $img,
+            ]);
+
+            // Create the association record
+            $sponser_ex= Exhibition_sponser::query()->create([
+                'sponser_id' => $sponser['id'],
+                'exhibition_id' => $exhibition_id,
+            ]);
+            Storage::disk('public')->put($img, file_get_contents($request['img']));
+
+            $data = $sponser;
+            $message = 'Sponsor added successfully.';
+            $code = 200;
+
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $code = 500;
+        }
+
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+    }
+
+    public function deleteSponsor($sponsor_id){
+        DB::beginTransaction();
+        try {
+            $sponsor=Sponser::query()->find($sponsor_id);
+            Storage::disk('public')->delete($sponsor->img);
+            $sponsor->delete();
+            DB::commit();
+            $message=' sponsor deleted successfully. ';
+            $code = 200;
+            return ['data' => [], 'message' => $message, 'code' => $code];
+
+        }catch (\Exception $e) {
+            DB::rollback();
+            $message = 'Error during deleting sponsor. Please try again ';
+            $code = 500;
+            return ['data' => [], 'message' => $message, 'code' => $e->getCode()];
+        }
+    }
+
+    public function showExhibitionSponsors($exhibition_id){
+        DB::beginTransaction();
+
+        try {
+            $sponsors = Exhibition_sponser::where('exhibition_id', $exhibition_id)->get();
+            DB::commit();
+            $data = $sponsors;
+            $message = 'sponsors  have been successfully show.';
+            $code = 200;
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = $e->getMessage();
+            $code = 500;
+        }
+
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+
+    }
+
+    public function filter_Exhibition_today()
+    {
+        DB::beginTransaction();
+        try {
+            $exhibition = Exhibition::query()
+                ->where('status', 3)
+                ->whereDate('start_date', Carbon::now()->toDateString()) // Filter for today's exhibitions
+                ->with('sections')
+                ->get();
+
+            DB::commit();
+            $data = $exhibition;
+            $message = 'The available exhibitions for today was shown successfully.';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing available exhibition. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+        }
+    }
+
+    public function filter_Exhibition_thisWeek()
+    {
+        DB::beginTransaction();
+        try {
+            $startOfWeek = Carbon::now()->startOfWeek()->toDateString();
+            $endOfWeek = Carbon::now()->endOfWeek()->toDateString();
+            $exhibition = Exhibition::query()
+                ->where('status', 3)
+                ->whereBetween('start_date', [$startOfWeek, $endOfWeek])
+                ->with('sections')
+                ->get();
+
+            DB::commit();
+            $data = $exhibition;
+            $message = 'The available exhibitions for this week was shown successfully.';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing available exhibition. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+        }
+    }
+
+    public function filter_Exhibition_later()
+    {
+        DB::beginTransaction();
+        try {
+            $exhibition = Exhibition::query()
+                ->where('status', 3)
+                ->whereDate('start_date', '>', Carbon::now()->toDateString()) // Filter for future exhibitions
+                ->with('sections')
+                ->get();
+
+            DB::commit();
+            $data = $exhibition;
+            $message = 'The available future exhibitions was shown successfully.';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing available exhibition. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
         }
     }
 

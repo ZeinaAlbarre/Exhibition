@@ -341,6 +341,17 @@ class ExhibitionController extends Controller
         }
     }
 
+    public function showExhibitionStands($exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService-> showExhibitionStands($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
 
     public function showEmployeeExhibition(): JsonResponse
     {
@@ -461,6 +472,79 @@ class ExhibitionController extends Controller
 
 
 
+    public function addSponsor(Request $request, $exhibition_id): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->addSponser($request,$exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+
+    public function deleteSponsor($sponsor_id): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->deleteSponsor($sponsor_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+    public function showExhibitionSponsors($exhibition_id): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->showExhibitionSponsors($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+
+    public function filter_Exhibition_today()
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->filter_Exhibition_today();
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+    public function filter_Exhibition_thisWeek()
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->filter_Exhibition_thisWeek();
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+    public function filter_Exhibition_later()
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->filter_Exhibition_later();
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
 
 
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExhibitionController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SectionController;
@@ -62,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showExhibitions','showExhibitions');
         Route::get('showExhibition/{id}','showExhibition');
         Route::get('showAvailableExhibition','showAvailableExhibition');
-        Route::get('showAvailableCompanyExhibition','showAvailableCompanyExhibition')->middleware('can:show.available.company.exhibition');
+        Route::get('showAvailableCompanyExhibition','showAvailableCompanyExhibition');
         Route::post('changeExhibitionStatus/{id}','changeExhibitionStatus')->middleware('can:change.exhibition.status');
         Route::post('addExhibitionSection/{id}','addExhibitionSection');//show sections list on app and add to one of this
         Route::get('showExhibitionSection/{section_id}','showExhibitionSection');//all sections in app
@@ -90,6 +91,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('updateStand/{stand_id}', 'updateStand');
         Route::delete('deleteStand/{stand_id}', 'deleteStand');
         Route::post('addStand/{exhibition_id}', 'addStand');
+        Route::get('/showExhibitionStands/{exhibition_id}','showExhibitionStands');
+
+        Route::post('/addSponsor/{exhibition_id}', 'addSponsor');
+        Route::delete('/deleteSponsor/{sponsor_id}', 'deleteSponsor');
+        Route::get('/showExhibitionSponsors/{exhibition_id}','showExhibitionSponsors');
+
+        //filter
+        Route::get('filter_Exhibition_today','filter_Exhibition_today');
+        Route::get('filter_Exhibition_thisWeek','filter_Exhibition_thisWeek');
+        Route::get('filter_Exhibition_later','filter_Exhibition_later');
 
     });
 
@@ -103,6 +114,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('addFavorite/{exhibition_id}', 'addFavorite');
         Route::get('deleteFavorite/{id}', 'deleteFavorite');
         Route::get('showFavorite', 'showFavorite');
+    });
+
+    Route::controller(CategoryController::class)->group(function () {
+        Route::post('addCategory/{exhibition_id}', 'addCategory');
+        Route::delete('deleteCategory/{id}', 'deleteCategory');
+        Route::get('showExhibitionCategory/{exhibition_id}', 'showExhibitionCategory');
     });
 
 

@@ -121,8 +121,8 @@ class UserService
             $user->assignRole($companyRole);
 
 
-           $permissions=$companyRole->permissions()->pluck('name')->toArray();
-           $user->givePermissionTo($permissions);
+            $permissions=$companyRole->permissions()->pluck('name')->toArray();
+            $user->givePermissionTo($permissions);
 
             $user->load('roles','permissions');
             $user=User::query()->find($user['id']);
@@ -443,48 +443,59 @@ class UserService
         DB::beginTransaction();
         try{
             $user = User::query()->where('email', $request['email'])->first();
-            if(!is_null($user)){
-                ResetCodePassword::query()->where('email', $request['email'])->delete();
-                $code_v=mt_rand(100000, 999999);
-                $codeData = ResetCodePassword::query()->create([
-                    'email'=>$request['email'],
-                    'code'=>$code_v,
-                ]);
-                // Send email to user
-                Mail::to($request['email'])->send(new SendCodeResetPassword($code_v));
-
-                DB::commit();
-                $data=$user;
-                $message = 'code sent successfully to your email.';
-                $code=200;
-            }else{
-                DB::commit();
-                $data=[];
-                $message = 'incorrect email.';
-                $code=402;
+            if (is_null($user))
+            {
+                $message = 'user not found.';
+                $code=404;
+                return['user'=>[],'message'=>$message,'code'=>$code];
             }
+            ResetCodePassword::query()->where('email', $request['email'])->delete();
+            $code_v=mt_rand(100000, 999999);
+
+            $codeData = ResetCodePassword::query()->create([
+                'email'=>$request['email'],
+                'code'=>$code_v,
+
+            ]);
+
+            // Send email to user
+            Mail::to($request['email'])->send(new SendCodeResetPassword($code_v));
+
+            DB::commit();
+            $message = 'code sent successfully to your email.';
+            $code=200;
+
+
         }catch (\Exception $e) {
             DB::rollback();
-            $data=[];
             $message = 'Error during reset password please try again';
             $code = 500;
         }
 
-        return['user'=>$data,'message'=>$message,'code'=>$code];
+        return['user'=>$user,'message'=>$message,'code'=>$code];
     }
 
-    public function code_check($request): array{
+    public function code_check($request,$user_id): array{
 
         DB::beginTransaction();
         try {
-            $passwordReset = ResetCodePassword::query()->firstWhere($request);
-            if($passwordReset){
-                if ($passwordReset->created_at  < now()->subHour()) {
-                    $passwordReset->delete();
-                    DB::commit();
-                    $message='Verification code has expired. Please request a new one.';
-                    $code=422;
-                }
+            $user=User::query()->where('id',$user_id)->first();
+            $passwordReset = ResetCodePassword::query()
+                ->Where('email',$user['email'])
+                ->where('code',$request['code'])->first();
+
+            if(is_null($passwordReset))
+            {
+                $message = 'error code try again.';
+                $code=404;
+                return['user'=>[],'message'=>$message,'code'=>$code];
+            }
+
+            if ($passwordReset->created_at  < now()->subHour()) {
+                $passwordReset->delete();
+                DB::commit();
+                $message='Verification code has expired. Please request a new one.';
+                $code=422;
             }
             else
             {
@@ -496,30 +507,29 @@ class UserService
             DB::rollback();
             $message = 'Error during reset password please try again';
             $code = 500;
+            return['user'=>[],'message'=>$message,'code'=>$code];
         }
 
-        return['user'=>[],'message'=>$message,'code'=>$code];
+        return['user'=>$user,'message'=>$message,'code'=>$code];
     }
-
-
 
     public function reset_password($request,$id): array
     {
-            DB::beginTransaction();
-            try{
-                $user = User::query()->firstWhere('id', $id);
-                // update user password
-                $user->update(['password' => Hash::make($request['password'])]);
-                DB::commit();
-                $message='password has been successfully reset';
-                $code = 200;
-            }catch (\Exception $e) {
-                DB::rollback();
-                $message = 'Error during accept company please try again';
-                $code = 500;
-            }
+        DB::beginTransaction();
+        try{
+            $user = User::query()->firstWhere('id', $id);
+            // update user password
+            $user->update(['password' => Hash::make($request['password'])]);
+            DB::commit();
+            $message='password has been successfully reset';
+            $code = 200;
+        }catch (\Exception $e) {
+            DB::rollback();
+            $message = 'Error during accept company please try again';
+            $code = 500;
+        }
 
-            return['user'=>[],'message'=>$message,'code'=>$code];
+        return['user'=>[],'message'=>$message,'code'=>$code];
     }
 
     public function accept_company($id):array
