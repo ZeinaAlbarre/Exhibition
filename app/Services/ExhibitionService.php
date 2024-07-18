@@ -1056,39 +1056,24 @@ class ExhibitionService
                 ->with([
                     'sections.section:id,name',
                     'media',
-                    'exhibition_sponser.sponser:id,img,name'
+                    'exhibition_sponser.sponser'
                 ])
                 ->find($id);
-            if($exhibition) {
 
+            if (!is_null($exhibition)) {
                 DB::commit();
+
                 $data = $exhibition->toArray();
-                if (!empty($data)) {
-                    foreach ($data as &$data) {
-                        if (isset($data['sections']) && is_array($data['sections'])) {
-                            foreach ($data['sections'] as &$section) {
-                                $section = $section['section'];
-                            }
-                        } else {
-                            $data['sections'] = [];
-                        }
-
-                        if (isset($data['exhibition_sponser']) && is_array($data['exhibition_sponser'])) {
-
-                            foreach ($data['exhibition_sponser'] as &$sponsor) {
-                                $sponsor = $sponsor['sponser'];
-                            }
-                        } else {
-                            $data['exhibition_sponser'] = [];
-                        }
-                    }
+                foreach ($data['sections'] as &$section) {
+                    $section = $section['section'];
                 }
-
+                foreach ($data['exhibition_sponser'] as &$sponsor) {
+                    $sponsor = $sponsor['sponser'];
+                }
 
                 $message = 'The exhibition was shown successfully.';
                 $code = 200;
-            }
-            else {
+            } else {
                 DB::commit();
                 $data = [];
                 $message = 'invalid id';
