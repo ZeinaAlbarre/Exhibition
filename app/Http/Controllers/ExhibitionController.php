@@ -380,11 +380,11 @@ class ExhibitionController extends Controller
     }
 
 
-    public function showExhibitions(): JsonResponse
+    public function showEndExhibition(): JsonResponse
     {
         $data=[];
         try{
-            $data=$this->exhibitionService->showExhibitions();
+            $data=$this->exhibitionService->showEndExhibition();
             return Response::Success($data['data'],$data['message']);
         }catch (\Throwable $th){
             $message=$th->getMessage();

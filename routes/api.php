@@ -61,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showEmployeeExhibition','showEmployeeExhibition');
         Route::post('searchExhibition','searchExhibition');
         Route::get('showExhibitions','showExhibitions');
+        Route::get('showEndExhibition','showEndExhibition');
         Route::get('showExhibition/{id}','showExhibition');
         Route::get('showAvailableExhibition','showAvailableExhibition');
         Route::get('showAvailableCompanyExhibition','showAvailableCompanyExhibition');
