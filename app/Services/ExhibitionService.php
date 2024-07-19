@@ -464,16 +464,31 @@ class ExhibitionService
     public function showExhibitionSection($section_id){
         DB::beginTransaction();
         try {
+            $user=Auth::user();
             $exhibition=[];
-            $exhibition_section=Exhibition_section::query()->where('section_id',$section_id)
-                 ->orderBy('created_at','desc')->get();
+            $exhibition_section=Exhibition_section::query()->where('section_id',$section_id)->get();
             if($exhibition_section){
                 foreach($exhibition_section as $item){
                     $exhibition_id=$item->exhibition_id;
-                    $exhibit=Exhibition::query()->where('id', $exhibition_id)->first();
-                    if(!is_null($exhibit)){
-                        $exhibition[] = $exhibit;
+                    if($user->hasRole('company')){
+                        $exhibit=Exhibition::query()->where('id', $exhibition_id)
+                            ->whereIn('status',[2,3,4])
+                            ->orderBy('created_at','desc')
+                            ->first();
+                        if(!is_null($exhibit)){
+                            $exhibition[] = $exhibit;
+                        }
+                    }else{
+                        $exhibit=Exhibition::query()->where('id', $exhibition_id)
+                            ->whereIn('status',[3,4])
+                            ->orderBy('created_at','desc')
+                            ->first();
+                        if(!is_null($exhibit)){
+                            $exhibition[] = $exhibit;
+                        }
                     }
+
+
                 }
             }
             DB::commit();
@@ -1227,15 +1242,23 @@ class ExhibitionService
         try {
             $exhibition=Exhibition::query()->find($id);
             $status=$request['status'];
-            if($status<0||$status>5){
+            if($status<0||$status>=5){
                 DB::commit();
                 $data = [];
                 $message = 'Please enter a valid status. ';
                 $code = 200;
             }
             else{
-                $exhibition['status']=$status;
-                $exhibition->save();
+                if($status==4){
+                    $exhibition['status']=$status;
+                    $exhibition->save();
+                    $exhibition_employee=Exhibition_employee::query()->where('exhibition_id',$id)->first();
+                    $exhibition_employee->delete();
+                }
+                else{
+                    $exhibition['status']=$status;
+                    $exhibition->save();
+                }
                 DB::commit();
                 $data = $exhibition;
                 $message = 'The exhibition status changed successfully.';
