@@ -77,11 +77,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('addExhibitionMedia/{exhibition_id}', 'addExhibitionMedia');
         Route::delete('deleteExhibitionMedia/{media_id}', 'deleteExhibitionMedia');
         Route::get('/showOrganizerExhibition', 'showOrganizerExhibition');
-        Route::get('/company/{company_id}', 'showCompany');
         Route::get('/showCompanyRequests/{exhibition_id}', 'showCompanyRequests');
         Route::post('/acceptCompanyRequest/{exhibition_id}/{company_id}', 'acceptCompanyRequest');
         Route::post('/rejectCompanyRequest/{exhibition_id}/{company_id}', 'rejectCompanyRequest');
-
+        Route::get('/company/{company_id}', 'showCompany');
+        Route::get('/showExhibitionCompany/{exhibition_id}', 'showExhibitionCompany');
 
         // Schedule routes
         Route::post('/exhibitions/addSchedule/{exhibition_id}', 'addSchedule');

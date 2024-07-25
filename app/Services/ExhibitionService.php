@@ -625,26 +625,6 @@ class ExhibitionService
         }
     }
 
-    public function showCompany($company_id){
-
-        DB::beginTransaction();
-        try {
-            $company = Company::query()->where('id',$company_id)->get();
-            DB::commit();
-            $data=$company;
-            $message='company has been successfully displayed. ';
-            $code = 200;
-        }catch (\Exception $e) {
-            DB::rollback();
-            $data=[];
-            $message = 'Error during showing company . Please try again ';
-            $code = 500;
-        }
-        return ['data' => $data, 'message' => $message, 'code' => $code];
-
-
-    }
-
     public function showCompanyRequests($exhibition_id)
     {
         DB::beginTransaction();
@@ -1483,4 +1463,46 @@ class ExhibitionService
         }
     }
 
+    public function showCompany($company_id){
+
+        DB::beginTransaction();
+        try {
+            $company = Company::query()->where('id',$company_id)->get();
+            DB::commit();
+            $data=$company;
+            $message='company has been successfully displayed. ';
+            $code = 200;
+        }catch (\Exception $e) {
+            DB::rollback();
+            $data=[];
+            $message = 'Error during showing company . Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+
+
+    }
+    public function showExhibitionCompany($exhibition_id){
+        DB::beginTransaction();
+        $data=[];
+        try {
+            $exhibition_company = Exhibition_company::where('exhibition_id', $exhibition_id)->get();
+            foreach($exhibition_company as $item) {
+                $user_id=$item->user_id;
+                $c_id=User::query()->where('id',$user_id)->first();
+                $data[]=Company::query()->where('id', $c_id['userable_id'])->first();
+            }
+            DB::commit();
+            $message = 'company have been successfully show.';
+            $code = 200;
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = $e->getMessage();
+            $code = 500;
+        }
+
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+
+    }
 }

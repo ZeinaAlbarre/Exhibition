@@ -22,6 +22,10 @@ class Company extends Model
         return $this->hasMany(Company_stand::class);
     }
 
+    public function exhibition_company()
+    {
+        return $this->belongsToMany(Exhibition::class);
+    }
 
 
 }

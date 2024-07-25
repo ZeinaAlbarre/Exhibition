@@ -63,7 +63,7 @@ class Exhibition extends Model
     }
     public function exhibition_company(): HasMany
     {
-        return $this->hasMany(Exhibition_company::class);
+        return $this->hasMany(Company::class);
     }
 
     public function sections(): HasMany

@@ -212,16 +212,6 @@ class ExhibitionController extends Controller
         }
     }
 
-    public function showCompany($company_id)
-    {
-        try {
-            $response = $this->exhibitionService->showCompany($company_id);
-
-            return Response::Success($response['data'], $response['message'], $response['code']);
-        } catch (\Throwable $th) {
-            return Response::Error([], $th->getMessage());
-        }
-    }
 
     public function showCompanyRequests($exhibition_id)
     {
@@ -558,6 +548,27 @@ class ExhibitionController extends Controller
         }
     }
 
+    public function showCompany($company_id)
+    {
+        try {
+            $response = $this->exhibitionService->showCompany($company_id);
+
+            return Response::Success($response['data'], $response['message'], $response['code']);
+        } catch (\Throwable $th) {
+            return Response::Error([], $th->getMessage());
+        }
+    }
+    public function showExhibitionCompany($exhibition_id){
+        $data=[];
+        try{
+            $data=$this->exhibitionService->showExhibitionCompany($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+
+    }
 
 
 
