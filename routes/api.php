@@ -5,6 +5,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExhibitionController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SectionController;
+
+use App\Http\Controllers\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showAvailableExhibition','showAvailableExhibition');
         Route::get('showAvailableCompanyExhibition','showAvailableCompanyExhibition');
         Route::post('changeExhibitionStatus/{id}','changeExhibitionStatus')->middleware('can:change.exhibition.status');
+        Route::get('deleteExhibitionSection/{exhibition_id}/{section_id}','deleteExhibitionSection');
         Route::post('addExhibitionSection/{id}','addExhibitionSection');//show sections list on app and add to one of this
         Route::get('showExhibitionSection/{section_id}','showExhibitionSection');//all sections in app
         Route::post('changeEmployeeStatus','changeEmployeeStatus');
@@ -127,3 +130,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::controller(TicketController::class)->group(function () {
+Route::get('/createTicket/{exhibition_id}/{user_id}', 'createTicket');
+    Route::post('/showQR', 'showQR');
+Route::post('/validate-ticket',  'validateTicket');
+});

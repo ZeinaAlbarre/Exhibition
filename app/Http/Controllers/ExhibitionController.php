@@ -163,8 +163,20 @@ class ExhibitionController extends Controller
 
     }
 
+    public function deleteExhibitionSection($exhibition_id,$section_id)
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->deleteExhibitionSection($exhibition_id,$section_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
 
-    public function addExhibitionMedia($request,$exhibition_id): JsonResponse
+    }
+
+    public function addExhibitionMedia(Request $request,$exhibition_id): JsonResponse
     {
         $data=[];
         try{

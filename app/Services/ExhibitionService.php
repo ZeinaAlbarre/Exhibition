@@ -461,6 +461,34 @@ class ExhibitionService
         return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
+
+    public function deleteExhibitionSection($exhibition_id,$section_id)
+    {
+        DB::beginTransaction();
+        try {
+            $exhibition = Exhibition::query()->find($exhibition_id);
+            if (!$exhibition) {
+                $data = [];
+                $message = 'Invalid id. ';
+                $code = 404;
+            }
+            else {
+                $exhibition_section = Exhibition_section::query()->where('exhibition_id', $exhibition_id)->
+                where('section_id', $section_id)->delete();
+                DB::commit();
+                $data = [];
+                $message = 'Exhibition section deleted successfully';
+                $code = 200;
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during deleting exhibition section. Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+    }
+
     public function showExhibitionSection($section_id){
         DB::beginTransaction();
         try {

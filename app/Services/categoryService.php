@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\Exhibition;
 use App\Models\Exhibition_category;
 use Illuminate\Support\Facades\DB;
 
@@ -54,11 +55,18 @@ class categoryService
 
     public function showExhibitionCategory($exhibition_id){
         DB::beginTransaction();
-
+        $data=[];
         try {
-            $categories = Exhibition_category::where('exhibition_id', $exhibition_id)->get();
+            $exhibition_category = Exhibition_category::where('exhibition_id', $exhibition_id)->get();
+            $data[]=Exhibition::query()->where('id', $exhibition_id)->first();
+
+            foreach( $exhibition_category as $item) {
+
+                $c_id=$item->category_id;
+                $data[]=Category::query()->where('id', $c_id)->first();
+
+            }
             DB::commit();
-            $data = $categories;
             $message = 'categories  have been successfully show.';
             $code = 200;
         } catch (\Exception $e) {
