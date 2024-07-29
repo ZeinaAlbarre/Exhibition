@@ -2,68 +2,139 @@
 
 namespace App\Services;
 
+use App\Models\Company;
+use App\Models\Company_stand;
+use App\Models\Exhibition;
+use App\Models\Exhibition_company;
 use App\Models\Exhibition_visitor;
+use App\Models\Payment;
+use App\Models\Qr;
+use App\Models\Stand;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Ticket;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Storage;
+
 
 class TicketServices
 {
-    public function createTicket($exhibition_id, $user_id): array
+    public function createTicket($exhibition_id): array
     {
         DB::beginTransaction();
         try {
-           $is_exist= Exhibition_visitor::query()->where('exhibition_id',$exhibition_id)
-                ->where('user_id',$user_id)->first();
-            if(!is_null($is_exist))
-            {
-                $data=[];
-                $message='You have previously registered for this exhibition';
+            $user=Auth::user();
+            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
+            $is_exist= Exhibition_visitor::query()->where('exhibition_id',$exhibition_id)
+                ->where('user_id',$user->id)->first();
+            if($user->hasRole('visitor')){
+                if(!is_null($is_exist))
+                {
+                    $data=[];
+                    $message='You have previously registered for this exhibition';
+                    $code=400;
+                    return ['data' => $data , 'message' => $message, 'code' =>$code];
+                }
+                $payment=Payment::query()->where('user_id',$user->id)->first();
+                if(!$payment){
+                    $data=[];
+                    $message='You have not created an financial account yet. ';
+                    $code=400;
+                    return ['data' => $data , 'message' => $message, 'code' =>$code];
+                }
+                if($payment['amount'] >= $exhibition['price']){
+                    $payment['amount'] -= $exhibition['price'] ;
+                    $payment->save();
+                }
+                else
+                {
+                    $data=[];
+                    $message='You don not have enough money to register please check that you have '. $exhibition['price'] .' SYP in your financial account';
+                    $code=400;
+                    return ['data' => $data , 'message' => $message, 'code' =>$code];
+                }
+                $exhibitionVisitor = Exhibition_visitor::create([
+                    'exhibition_id' => $exhibition_id,
+                    'user_id' => $user->id,
+                ]);
+                $qrCodeData = $exhibitionVisitor->id . '-' . now()->timestamp;
+                $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
+                $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
+                Storage::disk('public')->put($qrCodePath, $qrCode);
+                $qr=Qr::create([
+                    'user_id' => $user->id,
+                    'exhibition_id' => $exhibition_id,
+                    'url' => $qrCodeData,
+                    'img' => $qrCodePath
+                ]);
+                DB::commit();
+                $data =[$exhibitionVisitor,$qr];
+                $message='you are registered successfully to exhibition';
                 $code=200;
-                return ['data' => $data , 'message' => $message, 'code' =>$code];
-
             }
-            $exhibitionVisitor = Exhibition_visitor::create([
-                'exhibition_id' => $exhibition_id,
-                'user_id' => $user_id,
-            ]);
-            $data =$exhibitionVisitor;
-            DB::commit();
-            $qrCodeData = $exhibitionVisitor->id . '-' . now()->timestamp;
-            $qrCode = QrCode::generate($qrCodeData);
-            $exhibitionVisitor['qr_code']=  $qrCodeData ;
-            $exhibitionVisitor->save();
-            $message='you are registered successfully to exhibition';
-            $code=200;
+            else{
+                $is_exist= Exhibition_company::query()->where('exhibition_id',$exhibition_id)
+                    ->where('user_id',$user->id)->first();
+                if(!is_null($is_exist))
+                {
+                    $data=[];
+                    $message='You have previously registered for this exhibition';
+                    $code=400;
+                    return ['data' => $data , 'message' => $message, 'code' =>$code];
+                }
+                $exhibition_company=Exhibition_company::query()->create([
+                    'exhibition_id'=>$exhibition_id,
+                    'user_id'=>$user->id,
+                ]);
+                DB::commit();
+                $data = $exhibition_company;
+                $message = 'Your request has been sent successfully. You will be contacted if your request has been accepted or not . ';
+                $code = 200;
+            }
+
         }
         catch (\Exception $e) {
             DB::rollback();
-            return ['data' => [], 'message' => $e->getMessage() , 'code' => $e->getCode()];
+            $data = [];
+            $message = 'Error during ticket booking Request. Please try again ';
+            $code = 500;
         }
         return ['data' => $data , 'message' => $message, 'code' =>$code];
 
     }
 
-    public function showQR($request)
+    public function showQR($exhibition_id)
     {
         DB::beginTransaction();
         try {
-            $qrImage = QrCode::format('png')->size(200)->generate($request['qr']);
-            $message = 'success';
-            $code = 200;
+            $user=Auth::user()->id;
+            $qr = Qr::query()->where('user_id',$user)
+                ->where('exhibition_id',$exhibition_id)->first();
+            if($qr){
+                $data=$qr;
+                $message = 'qr has been shown successfully';
+                $code = 200;
+            }
+            else{
+                $data=[];
+                $message = '';
+                $code=200;
+            }
         }
-      catch (\Exception $e) {
-        DB::rollback();
-        return ['data' => [], 'message' => $e->getMessage() , 'code' => $e->getCode()];
-    }
-        return ['data' => $qrImage, 'message' => $message, 'code' => $code];
-
+        catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing qr. Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
     public function validateTicket($request)
     {
         $qrCode = $request->input('qr_code');
         $ticket = Ticket::where('qr_code', $qrCode)->first();
-
         if ($ticket && !$ticket->is_used) {
             $ticket->update(['is_used' => true]);
             return response()->json(['status' => 'success', 'message' => 'Ticket is valid.']);
@@ -71,5 +142,125 @@ class TicketServices
             return response()->json(['status' => 'error', 'message' => 'Ticket is invalid or already used.']);
         }
     }
+
+    public function showAvailableStand($exhibition_id)
+    {
+        DB::beginTransaction();
+        try {
+            $stand=Stand::query()->where('exhibition_id',$exhibition_id)->where('status',0)->get();
+            DB::commit();
+            $data = $stand;
+            $message = 'Available stands shown successfully .';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing exhibition stands. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
+
+    public function standBooking($request): array
+    {
+        DB::beginTransaction();
+        try {
+            $user=Auth::user();
+            $stand=Stand::query()->find($request['stand_id']);
+            $payment=Payment::query()->where('user_id',$user->id)->first();
+            if(!$payment){
+                DB::commit();
+                $data=[];
+                $message='You have not created an financial account yet. ';
+                $code=400;
+                return ['data' => $data , 'message' => $message, 'code' =>$code];
+            }
+            if($payment['amount']>=$stand['price']){
+                $payment['amount']-=$stand['price'];
+                $payment->save();
+                $stand['status']=1;
+                $stand->save();
+                Company_stand::query()->create([
+                    'company_id'=>$user['userable_id'],
+                    'stand_id'=>$request['stand_id']
+                ]);
+                $qrCodeData = $user->id . '-' . now()->timestamp;
+                $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
+                $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
+                Storage::disk('public')->put($qrCodePath, $qrCode);
+                $qr=Qr::query()->create([
+                    'user_id' => $user->id,
+                    'exhibition_id' => $stand['exhibition_id'],
+                    'url' => $qrCodeData,
+                    'img' => $qrCodePath
+                ]);
+            }
+            else
+            {
+                DB::commit();
+                $data=[];
+                $message='You don not have enough money to book this stand please check that you have '. $stand['price'] .' SYP in your financial account';
+                $code=400;
+                return ['data' => $data , 'message' => $message, 'code' =>$code];
+            }
+            DB::commit();
+            $data = [$stand,$qr];
+            $message = 'The stand has been successfully booked';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing exhibition Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
+
+        }
+    }
+
+    public function payCompanyEmployee($request,$exhibition_id){
+
+        DB::beginTransaction();
+        try {
+            $user=Auth::user();
+            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
+            $payment=Payment::query()->where('user_id',$user->id)->first();
+            if(!$payment){
+                $data=[];
+                $message='You have not created an financial account yet. ';
+                $code=200;
+                return ['data' => $data , 'message' => $message, 'code' =>$code];
+            }
+            if($payment['amount'] >= $exhibition['price'] * $request['num']){
+                $payment['amount'] -= $exhibition['price'] * $request['num'] ;
+                $payment->save();
+            }
+            else
+            {
+                $data=[];
+                $message='You don not have enough money to register please check that you have '. $exhibition['price'] * $request['num'] .' SYP in your financial account';
+                $code=200;
+                return ['data' => $data , 'message' => $message, 'code' =>$code];
+            }
+            DB::commit();
+            $data = [];
+            $message = 'The company employee have been successfully paid. ';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing exhibition Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
+
 }
 

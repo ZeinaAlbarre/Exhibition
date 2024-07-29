@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Mail\AcceptCompanyRequest;
 use App\Mail\AcceptExhibitionEmail;
+use App\Mail\RejectCompanyRequest;
 use App\Mail\RejectExhibitionEmail;
 use App\Models\Company;
 use App\Models\Employee;
@@ -13,7 +15,9 @@ use App\Models\Exhibition_organizer;
 use App\Models\Exhibition_revision;
 use App\Models\Exhibition_section;
 use App\Models\Exhibition_sponser;
+use App\Models\Exhibition_visitor;
 use App\Models\Media;
+use App\Models\Payment;
 use App\Models\Scheduale;
 use App\Models\Section;
 use App\Models\Sponser;
@@ -461,7 +465,6 @@ class ExhibitionService
         return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
-
     public function deleteExhibitionSection($exhibition_id,$section_id)
     {
         DB::beginTransaction();
@@ -628,40 +631,39 @@ class ExhibitionService
     public function showCompanyRequests($exhibition_id)
     {
         DB::beginTransaction();
-
         try {
             $companyRequests = Exhibition_company::where('exhibition_id', $exhibition_id)
                 ->where('status', 0)
+                ->with('user.userable')
                 ->get();
 
             DB::commit();
-
-            $data = $companyRequests; // Return the collection of requests
+            $data = $companyRequests;
             $message = 'Company requests have been successfully retrieved.';
             $code = 200;
 
         } catch (\Exception $e) {
             DB::rollback();
-
             $data = [];
             $message = 'Error retrieving company requests. Please try again.';
             $code = 500;
         }
-
         return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
-    public function acceptCompanyRequest($exhibition_id,$company_id):array
+    public function acceptCompanyRequest($exhibition_id,$company_id)
     {
         DB::beginTransaction();
         try{
+            $user=User::query()->findOrFail($company_id);
+            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
             $companyRequest = Exhibition_company::where('exhibition_id', $exhibition_id)
                 ->where('user_id', $company_id)
-                ->get();
-
+                ->first();
+            $company=Company::query()->findOrFail($user['userable_id']);
             $companyRequest['status']=1;
             $companyRequest->save();
-
+            Mail::to($user->email)->send(new AcceptCompanyRequest($company->company_name,$exhibition->title,$exhibition->location,$exhibition->start_date));
             DB::commit();
             $data=$companyRequest;
             $message='company accepted successfully. ';
@@ -672,20 +674,20 @@ class ExhibitionService
             $message = 'Error';
             $code = 500;
         }
-
-
         return ['user'=>$data,'message'=>$message,'code'=>$code];
     }
 
-    public function rejectCompanyRequest($exhibition_id,$company_id):array
+    public function rejectCompanyRequest($exhibition_id,$company_id)
     {
         DB::beginTransaction();
         try{
+            $user=User::query()->findOrFail($company_id);
+            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
+            $company=Company::query()->findOrFail($user['userable_id']);
             $companyRequest = Exhibition_company::where('exhibition_id', $exhibition_id)
                 ->where('user_id', $company_id)
                 ->delete();
-
-
+            Mail::to($user->email)->send(new RejectCompanyRequest($company->company_name,$exhibition->title));
             DB::commit();
             $data=[];
             $message='company rejected successfully. ';
@@ -697,13 +699,10 @@ class ExhibitionService
             $code = 500;
         }
 
-
         return ['user'=>$data,'message'=>$message,'code'=>$code];
     }
 
     public function addSchedule($exhibition_id, $request){
-
-
 
         DB::beginTransaction();
         try{
@@ -807,7 +806,7 @@ class ExhibitionService
         }
     }
 
-    public  function showScheduale($schedule_id){
+    public function showScheduale($schedule_id){
 
         DB::beginTransaction();
         try {
@@ -848,7 +847,6 @@ class ExhibitionService
 
     public function addStand($request,$exhibition_id): array
     {
-
         DB::beginTransaction();
 
         try {
@@ -927,7 +925,6 @@ class ExhibitionService
 
     public function showEmployeeExhibition()
     {
-
         DB::beginTransaction();
         try {
             $user = Auth::user()->id;
@@ -1368,7 +1365,6 @@ class ExhibitionService
 
     public function showExhibitionSponsors($exhibition_id){
         DB::beginTransaction();
-
         try {
             $sponsors = Exhibition_sponser::where('exhibition_id', $exhibition_id)->get();
             DB::commit();
@@ -1482,6 +1478,7 @@ class ExhibitionService
 
 
     }
+
     public function showExhibitionCompany($exhibition_id){
         DB::beginTransaction();
         $data=[];

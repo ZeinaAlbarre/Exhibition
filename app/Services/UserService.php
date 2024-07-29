@@ -723,7 +723,6 @@ class UserService
         }
     }
 
-
     private function appendRolesAndPermissions($user){
         $roles = [];
         foreach ($user->roles as $role){

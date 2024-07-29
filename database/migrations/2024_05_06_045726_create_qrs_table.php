@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('qrs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('exhibition_id')->constrained('exhibitions')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('url');
             $table->string('img');
+            $table->boolean('is_used')->default(0);
             $table->timestamps();
         });
     }

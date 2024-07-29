@@ -40,7 +40,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Qr::class);
     }
-
     public function favorite(): HasMany
     {
         return $this->hasMany(Favorite::class);

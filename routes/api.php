@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExhibitionController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SectionController;
 
 use App\Http\Controllers\TicketController;
@@ -78,8 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('deleteExhibitionMedia/{media_id}', 'deleteExhibitionMedia');
         Route::get('/showOrganizerExhibition', 'showOrganizerExhibition');
         Route::get('/showCompanyRequests/{exhibition_id}', 'showCompanyRequests');
-        Route::post('/acceptCompanyRequest/{exhibition_id}/{company_id}', 'acceptCompanyRequest');
-        Route::post('/rejectCompanyRequest/{exhibition_id}/{company_id}', 'rejectCompanyRequest');
+        Route::get('/acceptCompanyRequest/{exhibition_id}/{company_id}', 'acceptCompanyRequest');
+        Route::get('/rejectCompanyRequest/{exhibition_id}/{company_id}', 'rejectCompanyRequest');
         Route::get('/company/{company_id}', 'showCompany');
         Route::get('/showExhibitionCompany/{exhibition_id}', 'showExhibitionCompany');
 
@@ -127,11 +128,21 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
+    Route::controller(TicketController::class)->group(function () {
+        Route::get('/createTicket/{exhibition_id}', 'createTicket');
+        Route::get('/showQR/{exhibition_id}', 'showQR');
+        Route::post('/validate-ticket',  'validateTicket');
+        Route::get('/showAvailableStand/{exhibition_id}',  'showAvailableStand');
+        Route::post('/standBooking',  'standBooking');
+        Route::post('/payCompanyEmployee',  'payCompanyEmployee');
+
+    });
+
+    Route::controller(PaymentController::class)->group(function () {
+        Route::post('/addMoney/{user_id}', 'addMoney');
+        Route::get('/showMoney', 'showMoney');
+
+    });
 
 });
 
-Route::controller(TicketController::class)->group(function () {
-Route::get('/createTicket/{exhibition_id}/{user_id}', 'createTicket');
-    Route::post('/showQR', 'showQR');
-Route::post('/validate-ticket',  'validateTicket');
-});

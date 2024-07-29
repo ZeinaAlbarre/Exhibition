@@ -35,6 +35,11 @@ class Exhibition extends Model
         return $this->hasMany(Favorite::class);
     }
 
+    public function qr(): HasMany
+    {
+        return $this->hasMany(Qr::class);
+    }
+
     public function scheduale(): HasMany
     {
         return $this->hasMany(Scheduale::class);
