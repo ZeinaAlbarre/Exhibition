@@ -47,6 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('showProfile',[AuthController::class,'showProfile'])->name('show.profile');
     Route::post('updateCompanyProfile',[AuthController::class,'updateCompanyProfile']);
     Route::get('showEmployee',[AuthController::class,'showEmployee']);
+    Route::get('showCompanyRegisterRequest',[AuthController::class,'showCompanyRegisterRequest']);
+
 
 
     Route::controller(ExhibitionController::class)->group(function () {

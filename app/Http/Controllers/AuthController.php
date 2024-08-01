@@ -157,11 +157,11 @@ class AuthController extends Controller
 
     }
 
-    public function UserCodeCheck(UserCodeCheckRequest $request): JsonResponse
+    public function UserCodeCheck(UserCodeCheckRequest $request,$user_id): JsonResponse
     {
         $data=[];
         try{
-            $data=$this->userService->code_check($request->validated());
+            $data=$this->userService->code_check($request->validated(),$user_id);
             return Response::Success($data['user'],$data['message'],$data['code']);
         }catch (\Throwable $th){
             $message=$th->getMessage();
@@ -176,6 +176,20 @@ class AuthController extends Controller
         $data=[];
         try{
             $data=$this->userService->reset_password($request->validated(),$id);
+            return Response::Success($data['user'],$data['message'],$data['code']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+
+    }
+
+    public function showCompanyRegisterRequest(): JsonResponse
+    {
+
+        $data=[];
+        try{
+            $data=$this->userService->showCompanyRegisterRequest();
             return Response::Success($data['user'],$data['message'],$data['code']);
         }catch (\Throwable $th){
             $message=$th->getMessage();

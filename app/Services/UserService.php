@@ -79,10 +79,6 @@ class UserService
     {
         DB::beginTransaction();
         try{
-            $user=User::query()->where('email',$request['email'])->first();
-            if(!is_null($user)&&!is_null($user->code)){
-                $user->delete();
-            }
             $img=Str::random(32).".".time().'.'.request()->commercial_register->getClientOriginalExtension();
 
             $user=User::query()->create([
@@ -111,7 +107,7 @@ class UserService
             $user->code= $code_v;
             $user->expire_at= now()->addHour();
 
-            Mail::to($user['email'])->send(new SendCodeemail($code_v));
+            Mail::to($company['business_email'])->send(new SendCodeemail($code_v));
 
             $user->userable()->associate($company);
             $user->save();
@@ -532,6 +528,32 @@ class UserService
         return['user'=>[],'message'=>$message,'code'=>$code];
     }
 
+    public function showCompanyRegisterRequest(){
+        DB::beginTransaction();
+        try{
+            $user=User::query()->where('userable_type','App\Models\Company')->whereNull('code')->with('userable')->get();
+            $users=[];
+            foreach ($user as $item){
+                $company=Company::query()->where('id',$item['userable_id'])->first();
+                if($company['status']=='0'){
+                    $users[]=$item;
+                }
+            }
+            DB::commit();
+            $data=$users;
+            $message='Show company has been shown successfully. ';
+            $code = 200;
+        }catch (\Exception $e) {
+            DB::rollback();
+            $data=[];
+            $message = 'Error during showing company request';
+            $code = 500;
+        }
+
+
+        return ['user'=>$data,'message'=>$message,'code'=>$code];
+    }
+
     public function accept_company($id):array
     {
         DB::beginTransaction();
@@ -543,7 +565,7 @@ class UserService
                 if(!is_null($company)){
                     $company->status='1';
                     $company->save();
-                    Mail::to($user->email)->send(new AcceptCompanyemail($company->company_name));
+                    Mail::to($company->business_email)->send(new AcceptCompanyemail($company->company_name));
                     DB::commit();
                     $message='Company accepted successfully';
                     $code=200;

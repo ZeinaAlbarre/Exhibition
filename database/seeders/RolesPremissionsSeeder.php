@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -48,6 +49,20 @@ class RolesPremissionsSeeder extends Seeder
         $adminUser->assignRole($adminRole);
         $permissions=$adminRole->permissions()->pluck('name')->toArray();
         $adminUser->givePermissionTo($permissions);
+
+        $employeeUser=User::create([
+            'name'=>'Employee User',
+            'email'=>'employeeuser@gmail.com',
+            'phone'=>'0993789456',
+            'password'=>bcrypt('employee1234'),
+            'password_confirmation'=>bcrypt('password'),
+            'userable_id'=>'1',
+            'userable_type'=>'App\Models\Employee',
+        ]);
+        $employee=Employee::query()->create([
+            'is_available'=>2
+        ]);
+        $employeeUser->userable()->associate($employee);
 
         $organizerUser=User::create([
             'name'=>'organizer User',

@@ -63,7 +63,7 @@ class ExhibitionService
             }
             $randomEmployee = Employee::query()->where('is_available',0)->inRandomOrder()->value('id');
             if(is_null($randomEmployee)){
-                $randomEmployee = Employee::query()->inRandomOrder()->value('id');
+                $randomEmployee = Employee::query()->where('is_available',1)->inRandomOrder()->value('id');
             }
             $user=User::query()->where('userable_id',$randomEmployee)->where('userable_type','App\Models\Employee')->first();
             $exhibitionEmployee=Exhibition_employee::query()->create([
