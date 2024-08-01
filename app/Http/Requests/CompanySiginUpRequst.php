@@ -24,12 +24,12 @@ class CompanySiginUpRequst extends FormRequest
     {
         return [
             'name' =>'required|string|max:255',
-            'email' => 'required|max:255|unique:users|email',
+            'email' => 'required|max:255',
             'phone' => 'required|numeric|digits:10',
             'password' => 'required|string|min:8|max:30|confirmed',
             'password_confirmation'=>'required|same:password',
-            'company_name' => 'required|string|max:255|unique:companies',
-            'business_email' => 'required|email|max:255|unique:companies',
+            'company_name' => 'required|string|max:255',
+            'business_email' => 'required|email|max:255',
             'website' => 'nullable|url|max:255',
             'office_address'=>'string|max:255',
             'summary' => 'required|string|max:1000',

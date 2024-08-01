@@ -79,6 +79,97 @@ class UserService
     {
         DB::beginTransaction();
         try{
+           $user = User::query()->where('email', $request['email'])->first();
+            $companyName = Company::query()->where('company_name', $request['company_name'])->first();
+            $companyBusinessEmail = Company::query()->where('business_email', $request['business_email'])->first();
+            if (($user||$companyName||$companyBusinessEmail)) {
+                if($user && !is_null($user['code'])) {
+                    $company=Company::query()->where('id',$user['userable_id'])->first();
+                    $user->delete();
+                    $company->delete();
+                }
+               else if(!$user&&$companyName){
+                    $userId=User::query()->where('userable_id',$companyName['id'])->first();
+                    if(!is_null($userId['code']))
+                    {
+                        $userId->delete();
+                        $companyName->delete();
+                    }
+                }
+                else if(!$user&&$companyBusinessEmail){
+                    $userId=User::query()->where('userable_id',$companyBusinessEmail['id'])->first();
+                    if(!is_null($userId['code']))
+                    {
+                        $userId->delete();
+                        $companyBusinessEmail->delete();
+                    }
+                }
+            }
+           $user1 = User::query()->where('email', $request['email'])->first();
+            $companyName1 = Company::query()->where('company_name', $request['company_name'])->first();
+            $companyBusinessEmail1 = Company::query()->where('business_email', $request['business_email'])->first();
+            if ($user1||$companyName1||$companyBusinessEmail1) {
+                if ($user1 && is_null($user1['code'])) {
+                    if ($user1 && $companyName1 && $companyBusinessEmail1) {
+                         DB::commit();
+                        $data = [];
+                        $message = 'The email and company name and business email has already been taken. ';
+                        $code = 200;
+                        return ['user' => $data, 'message' => $message, 'code' => $code];
+                    } else if ($user1 && $companyName1) {
+                        DB::commit();
+                        $data = [];
+                        $message = 'The email and company name has already been taken. ';
+                        $code = 200;
+                        return ['user' => $data, 'message' => $message, 'code' => $code];
+                    } else if ($user1 && $companyBusinessEmail1) {
+                        DB::commit();
+                        $data = [];
+                        $message = 'The email and business email has already been taken. ';
+                        $code = 200;
+                        return ['user' => $data, 'message' => $message, 'code' => $code];
+                    } else if ($user1) {
+                        DB::commit();
+                        $data = [];
+                        $message = 'The email has already been taken. ';
+                        $code = 200;
+                        return ['user' => $data, 'message' => $message, 'code' => $code];
+                    }
+
+                }
+              if($companyName1){
+                    $userId=User::query()->where('userable_id',$companyName1['id'])->first();
+                    if(is_null($userId['code']))
+                    {
+                        if($companyBusinessEmail1){
+                            DB::commit();
+                            $data=[];
+                            $message = 'The company name and business email has already been taken. ';
+                            $code = 200;
+                            return ['user' => $data, 'message' => $message, 'code' => $code];
+                        }
+                        if($companyName1){
+                            DB::commit();
+                            $data=[];
+                            $message = 'The company name has already been taken. ';
+                            $code = 200;
+                            return ['user' => $data, 'message' => $message, 'code' => $code];
+                        }
+                    }
+                }
+                if($companyBusinessEmail1){
+                    $userId=User::query()->where('userable_id',$companyBusinessEmail1['id'])->first();
+                    if(is_null($userId['code']))
+                    {
+                        DB::commit();
+                        $data=[];
+                        $message = 'The business email has already been taken. ';
+                        $code = 200;
+                        return ['user' => $data, 'message' => $message, 'code' => $code];
+                    }
+                }
+            }
+
             $img=Str::random(32).".".time().'.'.request()->commercial_register->getClientOriginalExtension();
 
             $user=User::query()->create([
@@ -604,7 +695,7 @@ class UserService
                 $company_id=$user['userable_id'];
                 $company=Company::query()->find($company_id);
                 if(!is_null($company)){
-                    Mail::to($user->email)->send(new RejectCompanyemail($company->company_name));
+                    Mail::to($company->business_email)->send(new AcceptCompanyemail($company->company_name));
                     $company->delete();
                     $user->delete();
                     DB::commit();
@@ -762,7 +853,5 @@ class UserService
 
         return $user;
     }
-
-
 
 }
