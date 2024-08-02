@@ -755,21 +755,9 @@ class UserService
         DB::beginTransaction();
         try {
             $user_id=Auth::user()->id;
-            $user=User::query()->find($user_id);
-            if($user->hasRole('visitor')){
-                $visitor_id = $user['visitor_id'];
-                $visitor= Visitor::query()->find($visitor_id);
-                $data[]=[$user,$visitor];
-            }
-            else if($user->hasRole('company')){
-                $company_id = $user['userable_id'];
-                $company = Company::query()->find($company_id);
-                $data[]=[$user,$company];
-            }
-            else{
-                $data=$user;
-            }
+            $user=User::query()->where('id',$user_id)->with('userable')->first();
             DB::commit();
+            $data=$user;
             $message='Profile information displayed successfully';
             $code=200;
         }catch (\Exception $e) {
