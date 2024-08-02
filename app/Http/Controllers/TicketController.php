@@ -41,11 +41,11 @@ class TicketController extends Controller
         }
     }
 
-    public function showStandInfo($exhibition_id,$stand_id)
+    public function showStandInfo($stand_id)
     {
         $data=[];
         try{
-            $data=$this->ticketServices->showStandInfo($exhibition_id,$stand_id);
+            $data=$this->ticketServices->showStandInfo($stand_id);
             return Response::Success($data['data'],$data['message']);
         }catch (\Throwable $th){
             $message=$th->getMessage();

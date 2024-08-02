@@ -122,13 +122,14 @@ class TicketServices
         }
     }
 
-    public function showStandInfo($exhibition_id,$stand_id)
+    public function showStandInfo($stand_id)
     {
         DB::beginTransaction();
         try {
+            $standCompanies=Company_stand::query()->where('stand_id',$stand_id)->with('stand','company')->orderBy('stand_price','desc')->get();
             DB::commit();
-            $data = [];
-            $message = 'Available stands shown successfully .';
+            $data = $standCompanies;
+            $message = 'Company stand show successfully .';
             $code = 200;
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
@@ -147,7 +148,7 @@ class TicketServices
         DB::beginTransaction();
         try {
             $user=Auth::user();
-            $stand=Stand::query()->find($request['stand_id']);
+            $stand=$request['stands'];
             $payment=Payment::query()->where('user_id',$user->id)->first();
             if(!$payment){
                 DB::commit();
@@ -156,6 +157,22 @@ class TicketServices
                 $code=400;
                 return ['data' => $data , 'message' => $message, 'code' =>$code];
             }
+            foreach ($stand as $item){
+                $company_stand=Company_stand::query()->where('company_id',$user['userable_id'])->where('stand_id',$item['id'])->first();
+                if($company_stand){
+                    $company_stand->update([
+                        'stand_price'=>$item['stand_price']
+                    ]);
+                }
+                else{
+                    $companyS=Company_stand::query()->create([
+                        'company_id'=>$user['userable_id'],
+                        'stand_id'=>$item['id'],
+                        'stand_price'=>$item['stand_price'],
+                    ]);
+                }
+            }
+
             if($payment['amount']>=$stand['price']){
                 $payment['amount']-=$stand['price'];
                 $payment->save();

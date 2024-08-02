@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('exhibition_id')->constrained('exhibitions')->cascadeOnUpdate()->cascadeOnDelete();
             $table->boolean('status')->default(0);
-            $table->integer('stand_price');
+            $table->bigInteger('stand_price');
             $table->timestamps();
         });
     }

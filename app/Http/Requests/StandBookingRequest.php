@@ -25,7 +25,9 @@ class StandBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'stand_id'=>'required|integer',
+            'stands'=>'present|array',
+            'stands.*.id'=>'required|numeric',
+            'stands.*.stand_price'=>'required|numeric'
         ];
     }
 
