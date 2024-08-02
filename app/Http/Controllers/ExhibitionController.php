@@ -408,6 +408,19 @@ class ExhibitionController extends Controller
 
     }
 
+    public function showRegisterExhibition(): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->exhibitionService->showRegisterExhibition();
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+
+    }
+
     public function showExhibitionSection($section_id): JsonResponse
     {
         $data=[];

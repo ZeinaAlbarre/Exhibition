@@ -69,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showEndExhibition','showEndExhibition');
         Route::get('showExhibition/{id}','showExhibition');
         Route::get('showAvailableExhibition','showAvailableExhibition');
+        Route::get('showRegisterExhibition','showRegisterExhibition');
         Route::get('showAvailableCompanyExhibition','showAvailableCompanyExhibition');
         Route::post('changeExhibitionStatus/{id}','changeExhibitionStatus')->middleware('can:change.exhibition.status');
         Route::get('deleteExhibitionSection/{exhibition_id}/{section_id}','deleteExhibitionSection');

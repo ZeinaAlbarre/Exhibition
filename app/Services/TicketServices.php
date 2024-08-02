@@ -28,7 +28,6 @@ class TicketServices
             $exhibition=Exhibition::query()->findOrFail($exhibition_id);
             $is_exist= Exhibition_visitor::query()->where('exhibition_id',$exhibition_id)
                 ->where('user_id',$user->id)->first();
-            if($user->hasRole('visitor')){
                 if(!is_null($is_exist))
                 {
                     $data=[];
@@ -72,26 +71,6 @@ class TicketServices
                 $data =[$exhibitionVisitor,$qr];
                 $message='you are registered successfully to exhibition';
                 $code=200;
-            }
-            else{
-                $is_exist= Exhibition_company::query()->where('exhibition_id',$exhibition_id)
-                    ->where('user_id',$user->id)->first();
-                if(!is_null($is_exist))
-                {
-                    $data=[];
-                    $message='You have previously registered for this exhibition';
-                    $code=400;
-                    return ['data' => $data , 'message' => $message, 'code' =>$code];
-                }
-                $exhibition_company=Exhibition_company::query()->create([
-                    'exhibition_id'=>$exhibition_id,
-                    'user_id'=>$user->id,
-                ]);
-                DB::commit();
-                $data = $exhibition_company;
-                $message = 'Your request has been sent successfully. You will be contacted if your request has been accepted or not . ';
-                $code = 200;
-            }
 
         }
         catch (\Exception $e) {
@@ -143,13 +122,12 @@ class TicketServices
         }
     }
 
-    public function showAvailableStand($exhibition_id)
+    public function showStandInfo($exhibition_id,$stand_id)
     {
         DB::beginTransaction();
         try {
-            $stand=Stand::query()->where('exhibition_id',$exhibition_id)->where('status',0)->get();
             DB::commit();
-            $data = $stand;
+            $data = [];
             $message = 'Available stands shown successfully .';
             $code = 200;
             return ['data' => $data, 'message' => $message, 'code' => $code];

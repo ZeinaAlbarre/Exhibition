@@ -1502,4 +1502,40 @@ class ExhibitionService
         return ['data' => $data, 'message' => $message, 'code' => $code];
 
     }
+
+    public function showRegisterExhibition(){
+        DB::beginTransaction();
+        try {
+            $user=Auth::user();
+            $exhibition_visitor=Exhibition_visitor::query()->where('user_id',$user->id)->get();
+            $exhibitions=[];
+            if($exhibition_visitor){
+                foreach ($exhibition_visitor as $item){
+                    $exhibition=Exhibition::query()->where('id',$item['exhibition_id'])->first();
+                    $exhibitions[]=$exhibition;
+                }
+                DB::commit();
+                $data = $exhibitions;
+                $message = 'Register Exhibition has been shown successfully. ';
+                $code = 200;
+            }
+            else{
+                DB::commit();
+                $data = [];
+                $message = 'There are no Register exhibition yet. ';
+                $code = 200;
+            }
+
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing register exhibition Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
+
 }
