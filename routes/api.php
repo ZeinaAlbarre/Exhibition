@@ -81,9 +81,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('addExhibitionMedia/{exhibition_id}', 'addExhibitionMedia');
         Route::delete('deleteExhibitionMedia/{media_id}', 'deleteExhibitionMedia');
         Route::get('/showOrganizerExhibition', 'showOrganizerExhibition');
-        Route::get('/showCompanyRequests/{exhibition_id}', 'showCompanyRequests');
-        Route::get('/acceptCompanyRequest/{exhibition_id}/{company_id}', 'acceptCompanyRequest');
-        Route::get('/rejectCompanyRequest/{exhibition_id}/{company_id}', 'rejectCompanyRequest');
+        Route::get('/acceptCompanyRequest/{company_id}/{stand_id}', 'acceptCompanyRequest');
+        Route::get('/rejectCompanyRequest/{company_id}/{stand_id}', 'rejectCompanyRequest');
         Route::get('/company/{company_id}', 'showCompany');
         Route::get('/showExhibitionCompany/{exhibition_id}', 'showExhibitionCompany');
 
@@ -137,6 +136,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/validate-ticket',  'validateTicket');
         Route::get('/showAvailableStand/{exhibition_id}',  'showAvailableStand');
         Route::post('/standBooking',  'standBooking');
+        Route::get('/showStandInfo/{stand_id}',  'showStandInfo');
+        Route::get('/countStandCompany/{stand_id}',  'countStandCompany');
         Route::post('/payCompanyEmployee',  'payCompanyEmployee');
 
     });

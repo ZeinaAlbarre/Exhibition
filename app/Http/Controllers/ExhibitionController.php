@@ -224,11 +224,11 @@ class ExhibitionController extends Controller
         }
     }
 
-    public function acceptCompanyRequest($exhibition_id, $company_id): JsonResponse
+    public function acceptCompanyRequest($company_id,$stand_id): JsonResponse
     {
         $data=[];
         try{
-            $data=$this->exhibitionService->acceptCompanyRequest($exhibition_id, $company_id);
+            $data=$this->exhibitionService->acceptCompanyRequest($company_id,$stand_id);
             return Response::Success($data['data'],$data['message']);
         }catch (\Throwable $th){
             $message=$th->getMessage();
@@ -236,10 +236,10 @@ class ExhibitionController extends Controller
         }
     }
 
-    public function rejectCompanyRequest($exhibition_id, $company_id): JsonResponse
+    public function rejectCompanyRequest($company_id,$stand_id): JsonResponse
     { $data=[];
         try{
-            $data=$this->exhibitionService->rejectCompanyRequest($exhibition_id, $company_id);
+            $data=$this->exhibitionService->rejectCompanyRequest($company_id,$stand_id);
             return Response::Success($data['data'],$data['message']);
         }catch (\Throwable $th){
             $message=$th->getMessage();

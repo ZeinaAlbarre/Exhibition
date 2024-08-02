@@ -147,63 +147,57 @@ class TicketServices
     {
         DB::beginTransaction();
         try {
-            $user=Auth::user();
-            $stand=$request['stands'];
-            $payment=Payment::query()->where('user_id',$user->id)->first();
-            if(!$payment){
+            $user = Auth::user();
+            $stands = $request['stands'];
+            $payment = Payment::query()->where('user_id', $user->id)->first();
+
+            if (!$payment) {
                 DB::commit();
-                $data=[];
-                $message='You have not created an financial account yet. ';
-                $code=400;
-                return ['data' => $data , 'message' => $message, 'code' =>$code];
+                $data = [];
+                $message = 'You have not created an financial account yet. ';
+                $code = 400;
+                return ['data' => $data, 'message' => $message, 'code' => $code];
             }
-            foreach ($stand as $item){
-                $company_stand=Company_stand::query()->where('company_id',$user['userable_id'])->where('stand_id',$item['id'])->first();
-                if($company_stand){
-                    $company_stand->update([
-                        'stand_price'=>$item['stand_price']
-                    ]);
-                }
-                else{
-                    $companyS=Company_stand::query()->create([
-                        'company_id'=>$user['userable_id'],
-                        'stand_id'=>$item['id'],
-                        'stand_price'=>$item['stand_price'],
-                    ]);
+
+            $companyS = [];
+            $unavailableStands = [];
+
+            foreach ($stands as $item) {
+                $company_stand = Company_stand::query()->where('company_id', $user['userable_id'])->where('stand_id', $item['id'])->first();
+                $stand = Stand::query()->where('id', $item['id'])->first();
+
+                if ($payment['amount'] < $item['stand_price']) {
+                    $unavailableStands[] = $stand['name'];
+                } else {
+                    if ($company_stand) {
+                        $company_stand->update([
+                            'company_id' => $user['userable_id'],
+                            'stand_id' => $item['id'],
+                            'stand_price' => $item['stand_price'],
+                        ]);
+                        $companyS[] = $company_stand;
+                    } else {
+                        $companyS[] = Company_stand::query()->create([
+                            'company_id' => $user['userable_id'],
+                            'stand_id' => $item['id'],
+                            'stand_price' => $item['stand_price'],
+                        ]);
+                    }
                 }
             }
 
-            if($payment['amount']>=$stand['price']){
-                $payment['amount']-=$stand['price'];
-                $payment->save();
-                $stand['status']=1;
-                $stand->save();
-                Company_stand::query()->create([
-                    'company_id'=>$user['userable_id'],
-                    'stand_id'=>$request['stand_id']
-                ]);
-                $qrCodeData = $user->id . '-' . now()->timestamp;
-                $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
-                $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
-                Storage::disk('public')->put($qrCodePath, $qrCode);
-                $qr=Qr::query()->create([
-                    'user_id' => $user->id,
-                    'exhibition_id' => $stand['exhibition_id'],
-                    'url' => $qrCodeData,
-                    'img' => $qrCodePath
-                ]);
-            }
-            else
-            {
-                DB::commit();
-                $data=[];
-                $message='You don not have enough money to book this stand please check that you have '. $stand['price'] .' SYP in your financial account';
-                $code=400;
-                return ['data' => $data , 'message' => $message, 'code' =>$code];
-            }
             DB::commit();
-            $data = [$stand,$qr];
-            $message = 'The stand has been successfully booked';
+            if (count($unavailableStands) ==1) {
+                $message = 'We can not book for you ' . implode(', ', $unavailableStands) . ' stand because you do not have enough money for it but the other stand you enter booked successfully.';
+            }
+            else if(count($unavailableStands) >1){
+                $message = 'We can not book for you ' . implode(' and ', $unavailableStands) . ' stands because you do not have enough money for them but the other stand you enter booked successfully.';
+            }
+            else {
+                $message = 'The stand has been successfully booked';
+            }
+
+            $data = $companyS;
             $code = 200;
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
@@ -212,8 +206,26 @@ class TicketServices
             $data = [];
             $message = 'Error during showing exhibition Request. Please try again ';
             $code = 500;
-            return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+        }
+    }
 
+    public function countStandCompany($stand_id){
+        DB::beginTransaction();
+        try {
+            $company=Company_stand::query()->where('stand_id',$stand_id)->get();
+            DB::commit();
+            $data = count($company);
+            $message = 'The Company who booked this stand has been shown successfully. ';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during count company stand. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
         }
     }
 

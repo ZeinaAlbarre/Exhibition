@@ -65,6 +65,18 @@ class TicketController extends Controller
         }
     }
 
+    public function countStandCompany($stand_id)
+    {
+        $data=[];
+        try{
+            $data=$this->ticketServices->countStandCompany($stand_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
     public function payCompanyEmployee(CompanyEmployeeRequest $request,$exhibition_id){
         $data=[];
         try{

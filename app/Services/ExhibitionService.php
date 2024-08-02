@@ -7,6 +7,7 @@ use App\Mail\AcceptExhibitionEmail;
 use App\Mail\RejectCompanyRequest;
 use App\Mail\RejectExhibitionEmail;
 use App\Models\Company;
+use App\Models\Company_stand;
 use App\Models\Employee;
 use App\Models\Exhibition;
 use App\Models\Exhibition_company;
@@ -18,6 +19,7 @@ use App\Models\Exhibition_sponser;
 use App\Models\Exhibition_visitor;
 use App\Models\Media;
 use App\Models\Payment;
+use App\Models\Qr;
 use App\Models\Scheduale;
 use App\Models\Section;
 use App\Models\Sponser;
@@ -25,6 +27,7 @@ use App\Models\Stand;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Carbon;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Spatie\Permission\Models\Role;
 
 use Illuminate\Support\Facades\Auth;
@@ -628,44 +631,43 @@ class ExhibitionService
         }
     }
 
-    public function showCompanyRequests($exhibition_id)
-    {
-        DB::beginTransaction();
-        try {
-            $companyRequests = Exhibition_company::where('exhibition_id', $exhibition_id)
-                ->where('status', 0)
-                ->with('user.userable')
-                ->get();
-
-            DB::commit();
-            $data = $companyRequests;
-            $message = 'Company requests have been successfully retrieved.';
-            $code = 200;
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            $data = [];
-            $message = 'Error retrieving company requests. Please try again.';
-            $code = 500;
-        }
-        return ['data' => $data, 'message' => $message, 'code' => $code];
-    }
-
-    public function acceptCompanyRequest($exhibition_id,$company_id)
+    public function acceptCompanyRequest($company_id,$stand_id)
     {
         DB::beginTransaction();
         try{
-            $user=User::query()->findOrFail($company_id);
-            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
-            $companyRequest = Exhibition_company::where('exhibition_id', $exhibition_id)
-                ->where('user_id', $company_id)
-                ->first();
-            $company=Company::query()->findOrFail($user['userable_id']);
-            $companyRequest['status']=1;
-            $companyRequest->save();
-            Mail::to($user->email)->send(new AcceptCompanyRequest($company->company_name,$exhibition->title,$exhibition->location,$exhibition->start_date));
+            $company=Company::query()->findOrFail($company_id);
+            $user=User::query()->where('userable_id',$company_id)->where('userable_type','App\Models\Company')->first();
+            $stand=Stand::query()->findOrFail($stand_id);
+            $exhibition=Exhibition::query()->findOrFail($stand['exhibition_id']);
+            $standPrice=Company_stand::query()->where('stand_id',$stand_id)->where('company_id',$company_id)->first();
+            $companyStand=Company_stand::query()->where('stand_id',$stand_id)->where('company_id','!=',$company_id)->get();
+            foreach ($companyStand as $item){
+                $item->delete();
+            }
+            $standCompany=Company_stand::query()->where('stand_id','!=',$stand_id)->where('company_id',$company_id)->get();
+            foreach ($standCompany as $item){
+                $item->delete();
+            }
+            $exhibitionCompany=Exhibition_company::query()->create([
+                'user_id'=>$user['id'],
+                'exhibition_id'=>$exhibition['id'],
+            ]);
+            $payment=Payment::query()->where('user_id',$user['id'])->first();
+            $payment['amount']-=$standPrice['stand_price'];
+            $payment->save();
+            $qrCodeData = $exhibitionCompany->id . '-' . now()->timestamp;
+            $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
+            $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
+            Storage::disk('public')->put($qrCodePath, $qrCode);
+            $qr=Qr::create([
+                'user_id' => $user->id,
+                'exhibition_id' => $exhibition->id,
+                'url' => $qrCodeData,
+                'img' => $qrCodePath
+            ]);
+            Mail::to($company['business_email'])->send(new AcceptCompanyRequest($company->company_name,$exhibition->title,$exhibition->location,$exhibition->start_date));
             DB::commit();
-            $data=$companyRequest;
+            $data=$exhibitionCompany;
             $message='company accepted successfully. ';
             $code = 200;
         }catch (\Exception $e) {
@@ -677,17 +679,16 @@ class ExhibitionService
         return ['user'=>$data,'message'=>$message,'code'=>$code];
     }
 
-    public function rejectCompanyRequest($exhibition_id,$company_id)
+    public function rejectCompanyRequest($company_id,$stand_id)
     {
         DB::beginTransaction();
         try{
-            $user=User::query()->findOrFail($company_id);
-            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
-            $company=Company::query()->findOrFail($user['userable_id']);
-            $companyRequest = Exhibition_company::where('exhibition_id', $exhibition_id)
-                ->where('user_id', $company_id)
-                ->delete();
-            Mail::to($user->email)->send(new RejectCompanyRequest($company->company_name,$exhibition->title));
+            $company=Company::query()->findOrFail($company_id);
+            $stand=Stand::query()->findOrFail($stand_id);
+            $exhibition=Exhibition::query()->findOrFail($stand['exhibition_id']);
+            $companyStand=Company_stand::query()->where('stand_id',$stand_id)->where('company_id',$company_id)->first();
+            $companyStand->delete();
+            Mail::to($company->business_email)->send(new RejectCompanyRequest($company->company_name,$exhibition->title));
             DB::commit();
             $data=[];
             $message='company rejected successfully. ';
