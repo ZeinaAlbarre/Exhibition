@@ -8,9 +8,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\SectionController;
-
 use App\Http\Controllers\TicketController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('updateCompanyProfile',[AuthController::class,'updateCompanyProfile']);
     Route::get('showEmployee',[AuthController::class,'showEmployee']);
     Route::get('showCompanyRegisterRequest',[AuthController::class,'showCompanyRegisterRequest']);
-    Route::post('UserResetPassword/{id}',[AuthController::class,'UserResetPassword']);
+    Route::post('reset_visitor_password',[AuthController::class,'reset_visitor_password']);
 
 
     Route::controller(ExhibitionController::class)->group(function () {
@@ -161,11 +159,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showProducts/{company_id}', 'showProducts');
     });
     Route::controller(RateController::class)->group(function (){
-
         Route::post('addRate/{id}', 'addRate');
-
         Route::post('updateRate/{id}', 'updateRate');
-
         Route::get('showExhibitionRate/{id}', 'showExhibitionRate');
     });
 

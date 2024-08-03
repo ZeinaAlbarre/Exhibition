@@ -12,10 +12,13 @@ use App\Http\Requests\UserResetPasswordRequest;
 use App\Http\Requests\UserSignInRequest;
 use App\Http\Requests\VisitorSiginUpRequst;
 use App\Http\Responses\Response;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 
 class AuthController extends Controller
@@ -184,6 +187,17 @@ class AuthController extends Controller
 
     }
 
+    public function reset_visitor_password(UserResetPasswordRequest $request): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->userService->reset_visitor_password($request->validated());
+            return Response::Success($data['user'],$data['message'],$data['code']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
     public function showCompanyRegisterRequest(): JsonResponse
     {
 
