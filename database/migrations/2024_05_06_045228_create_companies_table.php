@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('status',['0','1','2'])->default('0');
             $table->string('commercial_register');
             $table->integer('number_of_employees')->nullable();
+            $table->string('img')->nullable();
             $table->timestamps();
         });
     }
