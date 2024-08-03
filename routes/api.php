@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ExhibitionController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RateController;
 use App\Http\Controllers\SectionController;
 
 use App\Http\Controllers\TicketController;
@@ -48,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('updateCompanyProfile',[AuthController::class,'updateCompanyProfile']);
     Route::get('showEmployee',[AuthController::class,'showEmployee']);
     Route::get('showCompanyRegisterRequest',[AuthController::class,'showCompanyRegisterRequest']);
-
+    Route::post('UserResetPassword/{id}',[AuthController::class,'UserResetPassword']);
 
 
     Route::controller(ExhibitionController::class)->group(function () {
@@ -147,6 +149,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/showMoney', 'showMoney');
 
     });
+
+    Route::controller(CompanyController::class)->group(function (){
+        // Add a new product
+        Route::post('addProduct', 'addProduct');
+        // Delete a product by ID
+        Route::delete('deleteProduct/{id}',  'deleteProduct');
+        // Update a product by ID
+        Route::put('updateProduct/{id}', 'updateProduct');
+        // Get a product by ID
+        Route::get('showProducts/{company_id}', 'showProducts');
+    });
+    Route::controller(RateController::class)->group(function (){
+
+        Route::post('addRate/{id}', 'addRate');
+
+        Route::post('updateRate/{id}', 'updateRate');
+
+        Route::get('showExhibitionRate/{id}', 'showExhibitionRate');
+    });
+
 
 });
 
