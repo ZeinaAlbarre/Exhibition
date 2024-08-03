@@ -781,6 +781,13 @@ class UserService
             ]);
             $company_id=$user['userable_id'];
             $company=Company::query()->find($company_id);
+            if(!is_null(request()->img)) {
+                $img = Str::random(32) . "." . time() . '.' . request()->img->getClientOriginalExtension();
+                $company->update([
+                    'img'=>$img
+                ]);
+                Storage::disk('public')->put($img, file_get_contents(request()->img));
+            }
             $company->update([
                 'business_email'=>$request['business_email'],
                 'website'=>$request['website'],
@@ -788,6 +795,8 @@ class UserService
                 'summary'=>$request['summary'],
                 'body'=>$request['body'],
             ]);
+
+
             DB::commit();
             $data[]=[$user,$company];
             $message='Profile updated successfully';
