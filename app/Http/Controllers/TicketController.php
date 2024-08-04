@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StandBookingRequest;
 use App\Http\Requests\CompanyEmployeeRequest;
+use App\Models\Qr;
 use App\Services\TicketServices;
 use Illuminate\Http\Request;
 use App\Http\Responses\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 
 class TicketController extends Controller
@@ -40,6 +42,29 @@ class TicketController extends Controller
             return Response::Error($data,$message);
         }
     }
+    public function validateTicket(Request $request)
+    {
+        $data=[];
+        try{
+            $data=$this->ticketServices->validateTicket($request);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+    public function ScanExit(Request $request)
+    {
+        $data=[];
+        try{
+            $data=$this->ticketServices->ScanExit($request);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
 
     public function showStandInfo($stand_id)
     {
