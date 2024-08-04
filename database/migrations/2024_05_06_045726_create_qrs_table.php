@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('exhibition_id')->constrained('exhibitions')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('url');
             $table->string('img');
+            $table->string('Attended')->default(0);
             $table->boolean('is_used')->default(0);
             $table->timestamps();
         });

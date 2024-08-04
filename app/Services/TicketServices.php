@@ -76,7 +76,7 @@ class TicketServices
         catch (\Exception $e) {
             DB::rollback();
             $data = [];
-            $message = 'Error during ticket booking Request. Please try again ';
+            $message = $e->getMessage();
             $code = 500;
         }
         return ['data' => $data , 'message' => $message, 'code' =>$code];
@@ -112,14 +112,61 @@ class TicketServices
 
     public function validateTicket($request)
     {
-        $qrCode = $request->input('qr_code');
-        $ticket = Ticket::where('qr_code', $qrCode)->first();
-        if ($ticket && !$ticket->is_used) {
-            $ticket->update(['is_used' => true]);
-            return response()->json(['status' => 'success', 'message' => 'Ticket is valid.']);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'Ticket is invalid or already used.']);
+        DB::beginTransaction();
+        try {
+            $qrCode = request()->qr_code;
+            $qr = Qr::query()->where('url', $qrCode)->first();
+            if ($qr && !$qr->is_used) {
+                $qr->update([
+                    'is_used' => true,
+                    'Attended'=> 1
+                    ]);
+                $code = 200;
+                $message = 'Ticket is valid.';
+                $data=$qr;
+            }
+            else {
+                $data=[];
+                $code = 200;
+                $message = 'Ticket is invalid or already used.';
+            }
         }
+        catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error. Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data , 'message' => $message, 'code' =>$code];
+    }
+
+    public function ScanExit($request)
+    {
+        DB::beginTransaction();
+        try {
+            $qrCode = request()->qr_code;
+            $qr = Qr::query()->where('url', $qrCode)->first();
+            if ($qr) {
+                $qr->update([
+                    'is_used' => false,
+                ]);
+                $code = 200;
+                $message = 'visitor can out Exhibition.';
+                $data=$qr;
+            }
+            else {
+                $data=[];
+                $code = 200;
+                $message = 'Ticket is invalid.';
+            }
+        }
+        catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error. Please try again ';
+            $code = 500;
+        }
+        return ['data' => $data , 'message' => $message, 'code' =>$code];
     }
 
     public function showStandInfo($stand_id)

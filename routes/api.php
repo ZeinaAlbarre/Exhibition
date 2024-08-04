@@ -139,7 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/showStandInfo/{stand_id}',  'showStandInfo');
         Route::get('/countStandCompany/{stand_id}',  'countStandCompany');
         Route::post('/payCompanyEmployee',  'payCompanyEmployee');
-
+        Route::post('/ScanExit',' ScanExit');
     });
 
     Route::controller(PaymentController::class)->group(function () {
