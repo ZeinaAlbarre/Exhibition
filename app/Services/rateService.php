@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 class rateService
 {
 
-        public function addRate($request, $exhibitionId): array
+    public function addRate($request, $exhibitionId): array
     {
         $data = [];
         try {
@@ -28,7 +28,7 @@ class rateService
         return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
-        public function updateRate($request , $rateId): array
+    public function updateRate($request , $rateId): array
     {
         $data = [];
         try {
@@ -49,7 +49,7 @@ class rateService
         return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
-        public function showExhibitionRate($exhibitionId): array
+    public function showExhibitionRate($exhibitionId): array
     {
         $data = [];
         try {

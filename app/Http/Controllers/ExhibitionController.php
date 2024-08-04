@@ -212,18 +212,6 @@ class ExhibitionController extends Controller
         }
     }
 
-
-    public function showCompanyRequests($exhibition_id)
-    {
-        try {
-            $response = $this->exhibitionService->showCompanyRequests($exhibition_id);
-            return Response::Success($response['data'], $response['message']);
-        } catch (\Throwable $th) {
-            $message = $th->getMessage();
-            return Response::Error([], $message);
-        }
-    }
-
     public function acceptCompanyRequest($company_id,$stand_id): JsonResponse
     {
         $data=[];

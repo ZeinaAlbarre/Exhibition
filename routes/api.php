@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\VisitorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -129,7 +130,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showExhibitionCategory/{exhibition_id}', 'showExhibitionCategory');
     });
 
-
     Route::controller(TicketController::class)->group(function () {
         Route::get('/createTicket/{exhibition_id}', 'createTicket');
         Route::get('/showQR/{exhibition_id}', 'showQR');
@@ -156,14 +156,26 @@ Route::middleware('auth:sanctum')->group(function () {
         // Update a product by ID
         Route::put('updateProduct/{id}', 'updateProduct');
         // Get a product by ID
-        Route::get('showProducts/{company_id}', 'showProducts');
+        Route::get('showProducts/{id}', 'showProducts');
+        Route::get('showCompanies', 'showCompanies');
+        Route::post('searchCompany', 'searchCompany');
+        Route::get('removeCompany/{company_id}', 'removeCompany');
+        Route::get('showRegisterCompanyExhibition', 'showRegisterCompanyExhibition');
+        Route::get('showUnRegisterCompanyExhibition', 'showUnRegisterCompanyExhibition');
+
     });
+
     Route::controller(RateController::class)->group(function (){
         Route::post('addRate/{id}', 'addRate');
         Route::post('updateRate/{id}', 'updateRate');
         Route::get('showExhibitionRate/{id}', 'showExhibitionRate');
     });
 
+    Route::controller(VisitorController::class)->group(function (){
+        Route::get('showVisitors', 'showVisitors');
+        Route::post('searchVisitor', 'searchVisitor');
+        Route::get('removeVisitor/{user_id}', 'removeVisitor');
+    });
 
 });
 

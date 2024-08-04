@@ -641,12 +641,16 @@ class ExhibitionService
             $exhibition=Exhibition::query()->findOrFail($stand['exhibition_id']);
             $standPrice=Company_stand::query()->where('stand_id',$stand_id)->where('company_id',$company_id)->first();
             $companyStand=Company_stand::query()->where('stand_id',$stand_id)->where('company_id','!=',$company_id)->get();
-            foreach ($companyStand as $item){
-                $item->delete();
+            if($companyStand){
+                foreach ($companyStand as $item){
+                    $item->delete();
+                }
             }
             $standCompany=Company_stand::query()->where('stand_id','!=',$stand_id)->where('company_id',$company_id)->get();
-            foreach ($standCompany as $item){
-                $item->delete();
+            if($standCompany){
+                foreach ($standCompany as $item){
+                    $item->delete();
+                }
             }
             $exhibitionCompany=Exhibition_company::query()->create([
                 'user_id'=>$user['id'],
@@ -673,10 +677,10 @@ class ExhibitionService
         }catch (\Exception $e) {
             DB::rollback();
             $data=[];
-            $message = 'Error';
+            $message = 'Error during accepting company request. ';
             $code = 500;
         }
-        return ['user'=>$data,'message'=>$message,'code'=>$code];
+        return ['data'=>$data,'message'=>$message,'code'=>$code];
     }
 
     public function rejectCompanyRequest($company_id,$stand_id)
@@ -696,11 +700,11 @@ class ExhibitionService
         }catch (\Exception $e) {
             DB::rollback();
             $data=[];
-            $message = 'Error';
+            $message = 'Error during rejected company request. ';
             $code = 500;
         }
 
-        return ['user'=>$data,'message'=>$message,'code'=>$code];
+        return ['data'=>$data,'message'=>$message,'code'=>$code];
     }
 
     public function addSchedule($exhibition_id, $request){

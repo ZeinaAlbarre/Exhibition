@@ -618,6 +618,7 @@ class UserService
 
         return['user'=>[],'message'=>$message,'code'=>$code];
     }
+
     public function reset_visitor_password($request): array
     {
         DB::beginTransaction();
@@ -643,6 +644,7 @@ class UserService
 
         return['user'=>$user,'message'=>$message,'code'=>$code];
     }
+
     public function showCompanyRegisterRequest(){
         DB::beginTransaction();
         try{
