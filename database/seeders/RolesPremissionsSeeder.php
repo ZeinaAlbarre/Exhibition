@@ -63,6 +63,9 @@ class RolesPremissionsSeeder extends Seeder
             'is_available'=>2
         ]);
         $employeeUser->userable()->associate($employee);
+        $employeeUser->assignRole($employeeRole);
+        $permissions=$employeeRole->permissions()->pluck('name')->toArray();
+        $employeeUser->givePermissionTo($permissions);
 
         $organizerUser=User::create([
             'name'=>'organizer User',

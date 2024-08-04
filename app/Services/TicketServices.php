@@ -76,7 +76,7 @@ class TicketServices
         catch (\Exception $e) {
             DB::rollback();
             $data = [];
-            $message = $e->getMessage();
+            $message = '';
             $code = 500;
         }
         return ['data' => $data , 'message' => $message, 'code' =>$code];
