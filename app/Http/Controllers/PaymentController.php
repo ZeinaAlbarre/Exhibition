@@ -38,4 +38,17 @@ class PaymentController extends Controller
             return Response::Error($data,$message);
         }
     }
+
+    public function showUserMoney($user_id)
+    {
+        $data=[];
+        try{
+            $data=$this->paymentService->showUserMoney($user_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
 }

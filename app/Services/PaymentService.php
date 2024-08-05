@@ -68,4 +68,31 @@ class PaymentService
 
         }
     }
+    public function showUserMoney($user_id){
+        DB::beginTransaction();
+        try {
+            $payment=Payment::query()->where('user_id',$user_id)->first();
+            if($payment){
+                DB::commit();
+                $data = $payment;
+                $message = 'User money has been shown successfully. ';
+                $code = 200;
+            }else{
+                DB::commit();
+                $data = [];
+                $message = 'The user did not create financial account yet. ';
+                $code = 200;
+            }
+
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing exhibition Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
 }

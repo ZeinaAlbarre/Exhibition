@@ -145,6 +145,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(PaymentController::class)->group(function () {
         Route::post('/addMoney/{user_id}', 'addMoney');
         Route::get('/showMoney', 'showMoney');
+        Route::get('/showUserMoney/{user_id}', 'showUserMoney');
+
 
     });
 

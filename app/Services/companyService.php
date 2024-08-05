@@ -132,7 +132,7 @@ class companyService
         DB::beginTransaction();
         try {
             $name = $request['name'];
-            $company=Company::query()->where('company_name', 'LIKE', '%'.$name.'%')->get();
+            $company=Company::query()->where('company_name', 'LIKE', '%'.$name.'%')->with('user')->get();
             DB::commit();
             $data = $company;
             $message = 'successfully searched. ';
