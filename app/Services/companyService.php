@@ -110,19 +110,19 @@ class companyService
     {
         DB::beginTransaction();
         try {
-            $company=Company::all();
+            $company=Company::with('user')->get();
             DB::commit();
             $data = $company;
-            $message = '';
+            $message = 'Companies has been shown successfully';
             $code = 200;
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
         } catch (\Exception $e) {
             DB::rollback();
             $data = [];
-            $message = 'Error during showing company . Please try again ';
+            $message = 'Error during showing companies . Please try again ';
             $code = 500;
-            return ['data' => $data, 'message' => $message, 'code' => $code];
+            return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
 
         }
     }
