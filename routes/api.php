@@ -151,6 +151,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/showMoney', 'showMoney');
         Route::get('/showUserMoney/{user_id}', 'showUserMoney');
 
+    Route::controller(\App\Http\Controllers\NotificationController::class)->group(function () {
+
+        Route::post('send', 'send');
+
+    }
+    );
 
     });
 
