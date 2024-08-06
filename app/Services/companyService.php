@@ -7,6 +7,7 @@ use App\Models\Company_stand;
 use App\Models\Exhibition;
 use App\Models\Exhibition_company;
 use App\Models\Product;
+use App\Models\Stand;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -178,7 +179,8 @@ class companyService
         DB::beginTransaction();
         try {
             $user=Auth::user();
-            $exhibition_company=Exhibition_company::query()->where('user_id',$user->id)->get();
+            $exhibition_company=Exhibition_company::query()->where('user_id',$user->id)
+                ->whereIn('status',[1,2])->get();
             $exhibitions=[];
             if($exhibition_company){
                 foreach ($exhibition_company as $item) {
@@ -215,10 +217,12 @@ class companyService
             $user = Auth::user();
             $exhibition_company = Exhibition_company::query()
                 ->where('user_id', $user->id)
+                ->where('status',[1,2])
                 ->pluck('exhibition_id')
                 ->toArray();
             $exhibitions = Exhibition::query()
                 ->whereNotIn('id', $exhibition_company)
+                ->whereIn('status',[2,3])
                 ->get();
             DB::commit();
             $data = $exhibitions;
@@ -236,5 +240,58 @@ class companyService
         }
     }
 
+    public function showCompanyStand($stand_id)
+    {
+        DB::beginTransaction();
+        try {
+            $companyStand=Company_stand::query()->where('stand_id',$stand_id)->where('status',1)->first();
+            $company=Company::query()->where('id',$companyStand['company_id'])->with('user')->first();
+            DB::commit();
+            $data = $company;
+            $message = 'Company stand shown successfully. ';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
 
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing company stand. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
+
+    public function showMyStand($exhibition_id)
+    {
+        DB::beginTransaction();
+        try {
+            $user=Auth::user();
+            $company=Company::query()->where('id',$user['userable_id'])->first();
+            $stand=Stand::query()->where('exhibition_id',$exhibition_id)->pluck('id');
+            $companyStand=Company_stand::query()->where('company_id',$company['id'])->whereIn('stand_id',$stand)->where('status',1)->first();
+            if($companyStand){
+                $stand=Stand::query()->findOrFail($companyStand['stand_id']);
+                DB::commit();
+                $data = $stand;
+                $message = 'Stand has been shown successfully. ';
+                $code = 200;
+            }
+            else{
+                DB::commit();
+                $data = [];
+                $message = 'You do not book any stand yet';
+                $code = 200;
+            }
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing exhibition Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
 }

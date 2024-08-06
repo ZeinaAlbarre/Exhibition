@@ -10,6 +10,7 @@ use App\Models\Exhibition_visitor;
 use App\Models\Payment;
 use App\Models\Qr;
 use App\Models\Stand;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -81,6 +82,100 @@ class TicketServices
         }
         return ['data' => $data , 'message' => $message, 'code' =>$code];
 
+    }
+
+    public function createCompanyExhibitionRequest($exhibition_id){
+        DB::beginTransaction();
+        try {
+            $user=Auth::user();
+            $company_exhibition=Exhibition_company::query()->create([
+                'user_id'=>$user->id,
+                'exhibition_id'=>$exhibition_id,
+                'status'=>0
+            ]);
+            DB::commit();
+            $data = $company_exhibition;
+            $message = 'The request sent successfully. ';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during sending company exhibition request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
+
+    public function showCompaniesExhibitionRequest($exhibition_id){
+        DB::beginTransaction();
+        try {
+            $exhibition_company=Exhibition_company::query()->where('exhibition_id',$exhibition_id)
+                ->where('status',0)->pluck('user_id');
+            $user=User::query()->whereIn('id',$exhibition_company)->with('userable')->get();
+            DB::commit();
+            $data=$user;
+            $message = 'Companies request has been shown successfully. ';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing company Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
+
+        }
+    }
+
+    public function acceptCompanyExhibitionRequest($user_id,$exhibition_id)
+    {
+        DB::beginTransaction();
+        try {
+            $companyExhibition=Exhibition_company::query()->where('user_id',$user_id)
+                ->where('exhibition_id',$exhibition_id)->first();
+            $companyExhibition['status']=1;
+            $companyExhibition->save();
+            DB::commit();
+            $data = $companyExhibition;
+            $message = 'The company request accepted successfully';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during accepting company Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
+    }
+
+    public function rejectCompanyExhibitionRequest($user_id,$exhibition_id)
+    {
+        DB::beginTransaction();
+        try {
+            $companyExhibition=Exhibition_company::query()->where('user_id',$user_id)
+                ->where('exhibition_id',$exhibition_id)->first();
+            $companyExhibition->delete();
+            DB::commit();
+            $data = [];
+            $message = 'The company request rejected successfully';
+            $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $data = [];
+            $message = 'Error during rejecting company Request. Please try again ';
+            $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
+        }
     }
 
     public function showQR($exhibition_id)
@@ -173,11 +268,21 @@ class TicketServices
     {
         DB::beginTransaction();
         try {
-            $standCompanies=Company_stand::query()->where('stand_id',$stand_id)->with('stand','company')->orderBy('stand_price','desc')->get();
-            DB::commit();
-            $data = $standCompanies;
-            $message = 'Company stand show successfully .';
-            $code = 200;
+            $standCompany=Company_stand::query()->where('stand_id',$stand_id)->where('status',1)->with('stand','company')->first();
+            $standCompanies=Company_stand::query()->where('stand_id',$stand_id)->where('status',0)->with('stand','company')->orderBy('stand_price','desc')->get();
+            if($standCompany){
+                DB::commit();
+                $data = $standCompany;
+                $message = 'This stand is accepted already. ';
+                $code = 200;
+            }
+            else
+            {
+                DB::commit();
+                $data = $standCompanies;
+                $message = 'Company stand has been show successfully .';
+                $code = 200;
+            }
             return ['data' => $data, 'message' => $message, 'code' => $code];
 
         } catch (\Exception $e) {
@@ -185,7 +290,7 @@ class TicketServices
             $data = [];
             $message = 'Error during showing exhibition stands. Please try again ';
             $code = 500;
-            return ['data' => $data, 'message' => $message, 'code' => $code];
+            return ['data' => $data, 'message' => $e->getMessage(), 'code' => $code];
 
         }
     }

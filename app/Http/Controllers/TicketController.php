@@ -31,6 +31,54 @@ class TicketController extends Controller
         }
     }
 
+    public function createCompanyExhibitionRequest($exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->ticketServices->createCompanyExhibitionRequest($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+    public function showCompaniesExhibitionRequest($exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->ticketServices->showCompaniesExhibitionRequest($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+    public function acceptCompanyExhibitionRequest($user_id,$exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->ticketServices->acceptCompanyExhibitionRequest($user_id,$exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+    public function rejectCompanyExhibitionRequest($user_id,$exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->ticketServices->rejectCompanyExhibitionRequest($user_id,$exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
     public function showQR($exhibition_id)
     {
         $data=[];
@@ -42,6 +90,7 @@ class TicketController extends Controller
             return Response::Error($data,$message);
         }
     }
+
     public function validateTicket(Request $request)
     {
         $data=[];
@@ -53,6 +102,7 @@ class TicketController extends Controller
             return Response::Error($data,$message);
         }
     }
+
     public function ScanExit(Request $request)
     {
         $data=[];
@@ -64,7 +114,6 @@ class TicketController extends Controller
             return Response::Error($data,$message);
         }
     }
-
 
     public function showStandInfo($stand_id)
     {

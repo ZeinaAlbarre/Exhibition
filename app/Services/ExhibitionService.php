@@ -640,9 +640,9 @@ class ExhibitionService
             $stand=Stand::query()->findOrFail($stand_id);
             $exhibition=Exhibition::query()->findOrFail($stand['exhibition_id']);
             $standPrice=Company_stand::query()->where('stand_id',$stand_id)->where('company_id',$company_id)->first();
-            $companyStand=Company_stand::query()->where('stand_id',$stand_id)->where('company_id','!=',$company_id)->get();
-            if($companyStand){
-                foreach ($companyStand as $item){
+            $companiesStand=Company_stand::query()->where('stand_id',$stand_id)->where('company_id','!=',$company_id)->get();
+            if($companiesStand){
+                foreach ($companiesStand as $item){
                     $item->delete();
                 }
             }
@@ -652,13 +652,14 @@ class ExhibitionService
                     $item->delete();
                 }
             }
-            $exhibitionCompany=Exhibition_company::query()->create([
-                'user_id'=>$user['id'],
-                'exhibition_id'=>$exhibition['id'],
-            ]);
+            $exhibitionCompany=Exhibition_company::query()->where('user_id',$user['id'])->where('exhibition_id',$exhibition['id'])->first();
+            $exhibitionCompany['status']=2;
+            $exhibitionCompany->save();
             $payment=Payment::query()->where('user_id',$user['id'])->first();
             $payment['amount']-=$standPrice['stand_price'];
             $payment->save();
+            $standPrice['status']=1;
+            $standPrice->save();
             $qrCodeData = $exhibitionCompany->id . '-' . now()->timestamp;
             $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
             $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';

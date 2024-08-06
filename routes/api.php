@@ -140,6 +140,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/countStandCompany/{stand_id}',  'countStandCompany');
         Route::post('/payCompanyEmployee',  'payCompanyEmployee');
         Route::post('/ScanExit',' ScanExit');
+        Route::get('/createCompanyExhibitionRequest/{exhibition_id}',  'createCompanyExhibitionRequest');
+        Route::get('/showCompaniesExhibitionRequest/{exhibition_id}',  'showCompaniesExhibitionRequest');
+        Route::get('/acceptCompanyExhibitionRequest/{user_id}/{exhibition_id}',  'acceptCompanyExhibitionRequest');
+        Route::get('/rejectCompanyExhibitionRequest/{user_id}/{exhibition_id}',  'rejectCompanyExhibitionRequest');
     });
 
     Route::controller(PaymentController::class)->group(function () {
@@ -164,6 +168,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('removeCompany/{company_id}', 'removeCompany');
         Route::get('showRegisterCompanyExhibition', 'showRegisterCompanyExhibition');
         Route::get('showUnRegisterCompanyExhibition', 'showUnRegisterCompanyExhibition');
+        Route::get('showCompanyStand/{stand_id}', 'showCompanyStand');
+        Route::get('showMyStand/{exhibition_id}', 'showMyStand');
 
     });
 

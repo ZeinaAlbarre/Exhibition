@@ -130,4 +130,28 @@ class CompanyController extends Controller
         }
     }
 
+    public function showMyStand($exhibition_id): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->compantService->showMyStand($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+    public function showCompanyStand($stand_id): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->compantService->showCompanyStand($stand_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
 }
