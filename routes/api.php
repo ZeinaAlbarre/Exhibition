@@ -30,7 +30,7 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('login','login')->name('user.login');
 
     Route::post('UserForgotPassword','UserForgotPassword');
-    Route::post('UserCodeCheck','UserCodeCheck');
+    Route::post('UserCodeCheck/{user_id}','UserCodeCheck');
     Route::post('UserResetPassword/{id}','UserResetPassword');
 
     Route::post('code_check_verification/{id}','code_check_verification')->name(' code.check.verification');

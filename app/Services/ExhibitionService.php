@@ -1469,7 +1469,7 @@ class ExhibitionService
 
         DB::beginTransaction();
         try {
-            $company = Company::query()->where('id',$company_id)->get();
+            $company = Company::query()->where('id',$company_id)->with('user')->get();
             DB::commit();
             $data=$company;
             $message='company has been successfully displayed. ';

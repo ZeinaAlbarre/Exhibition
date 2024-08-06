@@ -35,7 +35,7 @@ class VisitorService
         DB::beginTransaction();
         try {
             $name = $request['name'];
-            $visitor=User::query()->where('name', 'LIKE', '%'.$name.'%')->with('userable')->get();
+            $visitor=User::query()->where('name', 'LIKE', '%'.$name.'%')->where('userable_type','App\Models\Visitor')->with('userable')->get();
             DB::commit();
             $data = $visitor;
             $message = 'successfully searched. ';
