@@ -231,7 +231,7 @@ class ExhibitionService
                             $exhibition->save();
                         }
                         if (request()->hasFile('exhibition_map')) {
-                            $img = Str::random(32) . "." . time() . '.' . request()->cover_img->getClientOriginalExtension();
+                            $img = Str::random(32) . "." . time() . '.' . request()->exhibition_map->getClientOriginalExtension();
                             $exhibition['exhibition_map'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
                             $exhibition->save();
