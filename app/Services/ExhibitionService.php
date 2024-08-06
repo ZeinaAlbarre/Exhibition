@@ -1469,9 +1469,9 @@ class ExhibitionService
 
         DB::beginTransaction();
         try {
-            $company = Company::query()->where('id',$company_id)->with('user')->get();
+            $user=User::query()->where('userable_id',$company_id)->where('userable_type','App\Models\Company')->with('userable')->first();
             DB::commit();
-            $data=$company;
+            $data=$user;
             $message='company has been successfully displayed. ';
             $code = 200;
         }catch (\Exception $e) {

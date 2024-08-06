@@ -111,9 +111,9 @@ class companyService
     {
         DB::beginTransaction();
         try {
-            $company=Company::with('user')->get();
+            $user=User::query()->where('userable_type','App\Models\Company')->with('userable')->get();
             DB::commit();
-            $data = $company;
+            $data = $user;
             $message = 'Companies has been shown successfully';
             $code = 200;
             return ['data' => $data, 'message' => $message, 'code' => $code];
