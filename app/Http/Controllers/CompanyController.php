@@ -94,11 +94,11 @@ class CompanyController extends Controller
         }
     }
 
-    public function removeCompany($company_id): JsonResponse
+    public function removeCompany($user_id): JsonResponse
     {
         $data=[];
         try{
-            $data=$this->compantService->removeCompany($company_id);
+            $data=$this->compantService->removeCompany($user_id);
             return Response::Success($data['data'],$data['message']);
         }catch (\Throwable $th){
             $message=$th->getMessage();

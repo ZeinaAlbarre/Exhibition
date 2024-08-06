@@ -150,12 +150,12 @@ class companyService
         }
     }
 
-    public function removeCompany($company_id)
+    public function removeCompany($user_id)
     {
         DB::beginTransaction();
         try {
-            $company=Company::query()->findOrFail($company_id);
-            $user=User::query()->where('userable_id',$company_id)->where('userable_type','App\Models\Company')->first();
+            $user=User::query()->findOrFail($user_id);
+            $company=Company::query()->where('id',$user['userable_id']);
             $company->delete();
             $user->delete();
             DB::commit();

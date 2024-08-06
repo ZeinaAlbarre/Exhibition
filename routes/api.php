@@ -84,7 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/showOrganizerExhibition', 'showOrganizerExhibition');
         Route::get('/acceptCompanyRequest/{company_id}/{stand_id}', 'acceptCompanyRequest');
         Route::get('/rejectCompanyRequest/{company_id}/{stand_id}', 'rejectCompanyRequest');
-        Route::get('/company/{company_id}', 'showCompany');
+        Route::get('/company/{user_id}', 'showCompany');
         Route::get('/showExhibitionCompany/{exhibition_id}', 'showExhibitionCompany');
 
         // Schedule routes
@@ -165,7 +165,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('showProducts/{id}', 'showProducts');
         Route::get('showCompanies', 'showCompanies');
         Route::post('searchCompany', 'searchCompany');
-        Route::get('removeCompany/{company_id}', 'removeCompany');
+        Route::get('removeCompany/{user_id}', 'removeCompany');
         Route::get('showRegisterCompanyExhibition', 'showRegisterCompanyExhibition');
         Route::get('showUnRegisterCompanyExhibition', 'showUnRegisterCompanyExhibition');
         Route::get('showCompanyStand/{stand_id}', 'showCompanyStand');

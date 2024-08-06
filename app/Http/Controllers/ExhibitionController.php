@@ -549,10 +549,10 @@ class ExhibitionController extends Controller
         }
     }
 
-    public function showCompany($company_id)
+    public function showCompany($user_id)
     {
         try {
-            $response = $this->exhibitionService->showCompany($company_id);
+            $response = $this->exhibitionService->showCompany($user_id);
 
             return Response::Success($response['data'], $response['message'], $response['code']);
         } catch (\Throwable $th) {
