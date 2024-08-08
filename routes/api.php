@@ -183,6 +183,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('addRate/{id}', 'addRate');
         Route::post('updateRate/{id}', 'updateRate');
         Route::get('showExhibitionRate/{id}', 'showExhibitionRate');
+        Route::get('showUserExhibitionRate/{id}', 'showUserExhibitionRate');
+
     });
 
     Route::controller(VisitorController::class)->group(function (){

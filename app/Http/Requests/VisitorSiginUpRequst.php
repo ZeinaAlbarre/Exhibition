@@ -33,7 +33,6 @@ class VisitorSiginUpRequst extends FormRequest
             'password_confirmation'=>'required|same:password',
             'gender' => 'required|in:male,female' ,
             'birth_date' => 'required',
-
         ];
     }
 

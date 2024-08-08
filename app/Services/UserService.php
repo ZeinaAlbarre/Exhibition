@@ -622,27 +622,26 @@ class UserService
     public function reset_visitor_password($request): array
     {
         DB::beginTransaction();
-        try{
-            $id=Auth::user()->id;
-            $user = User::query()->firstWhere('id',$id);
-            // update user password
-            if( request()->old_password ==Auth::user()->password) {
+        try {
+            $id = Auth::user()->id;
+            $user = User::query()->firstWhere('id', $id);
+            $oldPassword = $request['old_password'];
+            if (Hash::check($oldPassword, Auth::user()->password)) {
                 $user->update(['password' => Hash::make($request['password'])]);
                 DB::commit();
                 $message = 'password has been successfully reset';
                 $code = 200;
-            }
-            else{
+            } else {
                 $message = 'you are enter old password wrong!';
                 $code = 200;
             }
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
             $message = $e->getMessage();
             $code = 500;
         }
 
-        return['user'=>$user,'message'=>$message,'code'=>$code];
+        return ['user' => $user, 'message' => $message, 'code' => $code];
     }
 
     public function showCompanyRegisterRequest(){

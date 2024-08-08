@@ -53,8 +53,10 @@ class rateService
     {
         $data = [];
         try {
-            $rates = Rate::query()->where('exhibition_id', $exhibitionId)->where('user_id',Auth::id())->first();
-            $data = $rates;
+            $rates = Rate::query()->where('exhibition_id', $exhibitionId)->avg('rate');
+            $avgRate=round($rates);
+            $avgRate=max(1, min($avgRate, 5));
+            $data = $avgRate;
             $message = 'Rates retrieved successfully.';
             $code = 200;
         } catch (\Exception $e) {
@@ -65,6 +67,19 @@ class rateService
         return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
-
+    public function showUserExhibitionRate($exhibitionId){
+        $data = [];
+        try {
+            $rates = Rate::query()->where('exhibition_id', $exhibitionId)
+                ->where('user_id',Auth::user()->id)->first();
+            $data = $rates;
+            $message = 'Rates retrieved successfully.';
+            $code = 200;
+        } catch (\Exception $e) {
+            $message = $e->getMessage();
+            $code = 500;
+        }
+        return ['data' => $data, 'message' => $message, 'code' => $code];
+    }
 }
-;
+

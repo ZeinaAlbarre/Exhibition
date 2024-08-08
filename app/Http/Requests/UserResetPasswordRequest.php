@@ -25,7 +25,7 @@ class UserResetPasswordRequest extends FormRequest
 
             'password' => 'required|string|min:8|max:30|confirmed',
             'password_confirmation'=>'required|same:password',
-
+            'old_password'=>'required',
         ];
     }
 }

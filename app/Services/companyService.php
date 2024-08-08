@@ -184,7 +184,9 @@ class companyService
             $exhibitions=[];
             if($exhibition_company){
                 foreach ($exhibition_company as $item) {
-                    $exhibition = Exhibition::query()->where('id', $item['exhibition_id'])->first();
+                    $exhibition = Exhibition::query()->where('id', $item['exhibition_id'])
+                        ->whereIn('status',[2,3])
+                        ->first();
                     $exhibitions[]=$exhibition;
                 }
                 DB::commit();
@@ -222,7 +224,7 @@ class companyService
                 ->toArray();
             $exhibitions = Exhibition::query()
                 ->whereNotIn('id', $exhibition_company)
-                ->whereIn('status',[2,3])
+                ->whereIn('status',[2])
                 ->get();
             DB::commit();
             $data = $exhibitions;

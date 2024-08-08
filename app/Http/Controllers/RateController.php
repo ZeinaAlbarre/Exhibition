@@ -52,4 +52,16 @@ class RateController extends Controller
         }
     }
 
+    public function showUserExhibitionRate(int $exhibitionId): JsonResponse
+    {
+        $data=[];
+        try{
+            $data=$this->rateService->showUserExhibitionRate($exhibitionId);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
 }

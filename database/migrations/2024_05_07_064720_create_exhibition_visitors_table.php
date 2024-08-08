@@ -15,8 +15,6 @@ return new  class extends Migration
             $table->id();
             $table->foreignId('exhibition_id')->constrained('exhibitions')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
-          //  $table->string('qr_code')->unique();
-          //  $table->boolean('is_used')->default(false);
             $table->timestamps();
         });
     }

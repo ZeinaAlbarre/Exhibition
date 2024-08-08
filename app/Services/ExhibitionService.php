@@ -1179,13 +1179,23 @@ class ExhibitionService
         }
     }
 
-    public function showAvailableExhibition(){
-
+    public function showAvailableExhibition()
+    {
         DB::beginTransaction();
         try {
-            $exhibition=Exhibition::query()->where('status',3)
-                ->with('sections.section:id,name')
-                ->orderBy('created_at','desc')->get();
+            $userId = Auth::user()->id;
+            $exhibiition_visitor=Exhibition_visitor::query()->where('user_id',$userId)
+                ->pluck('exhibition_id')
+                ->toArray();
+            $exhibition = Exhibition::query()
+                ->whereNotIn('id',$exhibiition_visitor)
+                ->where('status', 3)
+                ->with(['sections.section:id,name',
+                    'favorite' => function($query) use ($userId) {
+                        $query->where('user_id', $userId);
+                    }])
+                ->orderBy('created_at', 'desc')->get();
+
             if($exhibition) {
                 DB::commit();
                 $data = $exhibition->toArray();
@@ -1531,8 +1541,13 @@ class ExhibitionService
             $exhibitions=[];
             if($exhibition_visitor){
                 foreach ($exhibition_visitor as $item){
-                    $exhibition=Exhibition::query()->where('id',$item['exhibition_id'])->first();
-                    $exhibitions[]=$exhibition;
+                    $exhibition=Exhibition::query()->where('id',$item['exhibition_id'])
+                        ->whereIn('status',[3])
+                        ->first();
+                    if($exhibition){
+                        $exhibitions[]=$exhibition;
+
+                    }
                 }
                 DB::commit();
                 $data = $exhibitions;
