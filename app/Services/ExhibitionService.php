@@ -674,6 +674,8 @@ class ExhibitionService
             $payment->save();
             $standPrice['status']=1;
             $standPrice->save();
+            $stand['status']=1;
+            $stand->save();
             $qrCodeData = $exhibitionCompany->id . '-' . now()->timestamp;
             $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
             $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
