@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ExhibitionController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\SectionController;
@@ -192,6 +193,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('searchVisitor', 'searchVisitor');
         Route::get('removeVisitor/{user_id}', 'removeVisitor');
     });
+
+
+    Route::get('showUnreadNotifications', [NotificationController::class, 'showUnreadNotifications']);
+    Route::post('markNotificationAsRead/{id}', [NotificationController::class, 'markNotificationAsRead']);
+    Route::get('markAllAsRead', [NotificationController::class, 'markAllAsRead']);
+
 
 });
 

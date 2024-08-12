@@ -4,9 +4,10 @@ namespace App\Services;
 
 use App\Models\Payment;
 use App\Models\User;
+use App\Notifications\addMoneyNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Notification;
 class PaymentService
 {
     public function addMoney($request,$user_id){
@@ -22,6 +23,7 @@ class PaymentService
                 $data = $payment;
                 $message = 'The money has been successfully added to the user account. ';
                 $code = 200;
+                Notification::send($user, new addMoneyNotification($request['amount']));
 
             }else{
                 DB::commit();

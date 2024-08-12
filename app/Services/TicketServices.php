@@ -11,9 +11,12 @@ use App\Models\Payment;
 use App\Models\Qr;
 use App\Models\Stand;
 use App\Models\User;
+
+use App\Notifications\ticketBookingForVisitor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use PHPUnit\Framework\Attributes\Ticket;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
@@ -72,12 +75,14 @@ class TicketServices
                 $data =[$exhibitionVisitor,$qr];
                 $message='you are registered successfully to exhibition';
                 $code=200;
+            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
+            Notification::send($user,new ticketBookingForVisitor($exhibition['title'],$exhibition['price']));
 
         }
         catch (\Exception $e) {
             DB::rollback();
             $data = [];
-            $message = '';
+            $message = $e->getMessage();
             $code = 500;
         }
         return ['data' => $data , 'message' => $message, 'code' =>$code];

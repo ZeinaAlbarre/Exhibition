@@ -25,7 +25,7 @@ use App\Models\Section;
 use App\Models\Sponser;
 use App\Models\Stand;
 use App\Models\User;
-use App\Notifications\new_exhibition_notification;
+use App\Notifications\NewExhibitionForVisitors;
 use App\Notifications\NewExibition;
 use App\Notifications\UpdateNotification;
 use Illuminate\Console\Scheduling\Schedule;
@@ -1300,6 +1300,11 @@ class ExhibitionService
                 $data = $exhibition;
                 $message = 'The exhibition status changed successfully.';
                 $code = 200;
+                if($status==3)
+                {
+                    $users=User::query()->where('userable_type','App\Models\Visitor')->get();
+                    Notification::send($users,new NewExhibitionForVisitors($exhibition['title']));
+                }
             }
             return ['data' => $data, 'message' => $message, 'code' => $code];
 

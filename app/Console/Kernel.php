@@ -14,7 +14,15 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('user:expire')->everyMinute();
+        $schedule->call(function () {
+            app(\App\Http\Controllers\NotificationController::class)->notifyUpcomingScheduales();
+        })->everyMinute();
+        $schedule->call(function () {
+            app(\App\Http\Controllers\NotificationController::class)->remindVisitorsBeforeExhibition();
+        })->daily();
     }
+
+
 
     /**
      * Register the commands for the application.
