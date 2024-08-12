@@ -10,6 +10,7 @@ use App\Http\Requests\UserCodeCheckRequest;
 use App\Http\Requests\UserForgetPasswordRequest;
 use App\Http\Requests\UserResetPasswordRequest;
 use App\Http\Requests\UserSignInRequest;
+use App\Http\Requests\VisitorResetPassword;
 use App\Http\Requests\VisitorSiginUpRequst;
 use App\Http\Responses\Response;
 use App\Models\User;
@@ -187,7 +188,7 @@ class AuthController extends Controller
 
     }
 
-    public function reset_visitor_password(UserResetPasswordRequest $request): JsonResponse
+    public function reset_visitor_password(VisitorResetPassword $request): JsonResponse
     {
         $data=[];
         try{
