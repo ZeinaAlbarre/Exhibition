@@ -53,9 +53,9 @@ class UserSeeder extends Seeder
                     'summary' => $faker->text,
                     'body' => $faker->paragraph,
                     'status' => $faker->randomElement(['0', '1']),
-                    'commercial_register' => $faker->randomNumber(9),
+                    'commercial_register' => 'YXkJdDjSU4sQTkmsIW2HxF0TypFsT6DR.1722512725.png',
                     'number_of_employees' => $faker->randomNumber(3),
-                    'img' => 'YXkJdDjSU4sQTkmsIW2HxF0TypFsT6DR.1722512725.png'
+                    'img' =>  'YXkJdDjSU4sQTkmsIW2HxF0TypFsT6DR.1722512725.png'
                 ]);
 
                 $user->userable()->associate($company)->save();
