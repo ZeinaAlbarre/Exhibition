@@ -54,7 +54,7 @@ class RolesPremissionsSeeder extends Seeder
             'name'=>'Employee User',
             'email'=>'employeeuser@gmail.com',
             'phone'=>'0993789456',
-            'password'=>bcrypt('employee1234'),
+            'password'=>bcrypt('password'),
             'password_confirmation'=>bcrypt('password'),
             'userable_id'=>'1',
             'userable_type'=>'App\Models\Employee',
@@ -67,16 +67,62 @@ class RolesPremissionsSeeder extends Seeder
         $permissions=$employeeRole->permissions()->pluck('name')->toArray();
         $employeeUser->givePermissionTo($permissions);
 
+        $employeeUser2=User::create([
+            'name'=>'Employee User2',
+            'email'=>'employeeuser2@gmail.com',
+            'phone'=>'0993789456',
+            'password'=>bcrypt('password'),
+            'password_confirmation'=>bcrypt('password'),
+            'userable_id'=>'3',
+            'userable_type'=>'App\Models\Employee',
+        ]);
+        $employee2=Employee::query()->create([
+            'is_available'=>0
+        ]);
+        $employeeUser2->userable()->associate($employee2);
+        $employeeUser2->assignRole($employeeRole);
+        $permissions=$employeeRole->permissions()->pluck('name')->toArray();
+        $employeeUser2->givePermissionTo($permissions);
+
+        $employeeUser3=User::create([
+            'name'=>'Employee User3',
+            'email'=>'employeeuser3@gmail.com',
+            'phone'=>'0993789456',
+            'password'=>bcrypt('password'),
+            'password_confirmation'=>bcrypt('password'),
+            'userable_id'=>'2',
+            'userable_type'=>'App\Models\Employee',
+        ]);
+        $employee3=Employee::query()->create([
+            'is_available'=>0
+        ]);
+        $employeeUser3->userable()->associate($employee3);
+        $employeeUser3->assignRole($employeeRole);
+        $permissions=$employeeRole->permissions()->pluck('name')->toArray();
+        $employeeUser3->givePermissionTo($permissions);
+
+
         $organizerUser=User::create([
             'name'=>'organizer User',
             'email'=>'ghina.alrefai12@gmail.com',
             'phone'=>'0992501682',
-            'password'=>bcrypt('12345678'),
+            'password'=>bcrypt('password'),
             'password_confirmation'=>bcrypt('password'),
         ]);
         $organizerUser->assignRole($organizerRole);
         $permissions=$organizerRole->permissions()->pluck('name')->toArray();
         $organizerUser->givePermissionTo($permissions);
+
+        $organizerUser2=User::create([
+            'name'=>'organizer User2',
+            'email'=>'ghina.alharash2@gmail.com',
+            'phone'=>'0992501682',
+            'password'=>bcrypt('password'),
+            'password_confirmation'=>bcrypt('password'),
+        ]);
+        $organizerUser2->assignRole($organizerRole);
+        $permissions=$organizerRole->permissions()->pluck('name')->toArray();
+        $organizerUser2->givePermissionTo($permissions);
 
     }
 }

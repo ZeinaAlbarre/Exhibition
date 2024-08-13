@@ -1,0 +1,602 @@
+[
+{
+"id": 1,
+"name": "3K-32",
+"size": "Large",
+"price": 1500,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 2,
+"name": "3K-31",
+"size": "Small",
+"price": 800,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 3,
+"name": "3K-30",
+"size": "Medium",
+"price": 1200,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 4,
+"name": "3K-29",
+"size": "Large",
+"price": 1800,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 5,
+"name": "3K-28",
+"size": "Small",
+"price": 700,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 6,
+"name": "3K-27",
+"size": "Medium",
+"price": 1100,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 7,
+"name": "3K-26",
+"size": "Large",
+"price": 1600,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 8,
+"name": "3K-25",
+"size": "Small",
+"price": 900,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 9,
+"name": "3K-24",
+"size": "Medium",
+"price": 1300,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 10,
+"name": "3K-23",
+"size": "Large",
+"price": 1700,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 11,
+"name": "3L-21",
+"size": "Small",
+"price": 850,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 12,
+"name": "3K-21",
+"size": "Medium",
+"price": 1250,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 13,
+"name": "3K-20",
+"size": "Large",
+"price": 1650,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 14,
+"name": "3K-19",
+"size": "Small",
+"price": 750,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 15,
+"name": "3K-18",
+"size": "Medium",
+"price": 1150,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 16,
+"name": "3K-17",
+"size": "Large",
+"price": 1550,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 17,
+"name": "3K-16",
+"size": "Small",
+"price": 800,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 18,
+"name": "3K-15",
+"size": "Medium",
+"price": 1200,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 19,
+"name": "3K-14",
+"size": "Large",
+"price": 1600,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 20,
+"name": "3K-13",
+"size": "Small",
+"price": 700,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 21,
+"name": "3K-12",
+"size": "Medium",
+"price": 1100,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 22,
+"name": "3K-11",
+"size": "Large",
+"price": 1500,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 23,
+"name": "3K-10",
+"size": "Small",
+"price": 850,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 24,
+"name": "3J-21",
+"size": "Medium",
+"price": 1250,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 25,
+"name": "3J-20",
+"size": "Large",
+"price": 1650,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 26,
+"name": "3J-19",
+"size": "Small",
+"price": 750,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 27,
+"name": "3J-18",
+"size": "Medium",
+"price": 1150,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 28,
+"name": "3J-17",
+"size": "Large",
+"price": 1550,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 29,
+"name": "3J-16",
+"size": "Small",
+"price": 800,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 30,
+"name": "3J-15",
+"size": "Medium",
+"price": 1200,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 31,
+"name": "3J-14",
+"size": "Large",
+"price": 1600,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 32,
+"name": "3J-13",
+"size": "Small",
+"price": 700,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 33,
+"name": "3J-12",
+"size": "Medium",
+"price": 1100,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 34,
+"name": "3J-11",
+"size": "Large",
+"price": 1500,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 35,
+"name": "3J-10",
+"size": "Small",
+"price": 850,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 36,
+"name": "3H-19",
+"size": "Medium",
+"price": 1250,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 37,
+"name": "3H-18",
+"size": "Large",
+"price": 1650,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 38,
+"name": "3H-17",
+"size": "Small",
+"price": 750,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 39,
+"name": "3H-16",
+"size": "Medium",
+"price": 1150,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 40,
+"name": "3H-15",
+"size": "Large",
+"price": 1550,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 41,
+"name": "3H-14",
+"size": "Small",
+"price": 800,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 42,
+"name": "3H-13",
+"size": "Medium",
+"price": 1200,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 43,
+"name": "3H-12",
+"size": "Large",
+"price": 1600,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 44,
+"name": "3G-09",
+"size": "Small",
+"price": 700,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 45,
+"name": "3G-01",
+"size": "Medium",
+"price": 1100,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 46,
+"name": "3F-09",
+"size": "Large",
+"price": 1500,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 47,
+"name": "3F-01",
+"size": "Small",
+"price": 850,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 48,
+"name": "3E-17",
+"size": "Medium",
+"price": 1250,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 49,
+"name": "3E-01",
+"size": "Large",
+"price": 1650,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 50,
+"name": "3D-19",
+"size": "Small",
+"price": 750,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 51,
+"name": "3D-18",
+"size": "Medium",
+"price": 1150,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 52,
+"name": "3D-17",
+"size": "Large",
+"price": 1550,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 53,
+"name": "3D-16",
+"size": "Small",
+"price": 800,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 54,
+"name": "3D-15",
+"size": "Medium",
+"price": 1200,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 55,
+"name": "3D-14",
+"size": "Large",
+"price": 1600,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 56,
+"name": "3D-13",
+"size": "Small",
+"price": 700,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 57,
+"name": "3D-12",
+"size": "Medium",
+"price": 1100,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 58,
+"name": "3C-21",
+"size": "Large",
+"price": 1500,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 59,
+"name": "3C-20",
+"size": "Small",
+"price": 850,
+"status": false,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+},
+{
+"id": 60,
+"name": "3C-19",
+"size": "Medium",
+"price": 1250,
+"status": true,
+"exhibition_id": 6,
+"created_at": "2023-11-10T16:00:00.000Z",
+"updated_at": "2023-11-10T16:00:00.000Z"
+}
+]

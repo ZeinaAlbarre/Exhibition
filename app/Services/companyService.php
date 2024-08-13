@@ -219,12 +219,12 @@ class companyService
             $user = Auth::user();
             $exhibition_company = Exhibition_company::query()
                 ->where('user_id', $user->id)
-                ->where('status',[1,2])
+                ->where('status',[0,1,2])
                 ->pluck('exhibition_id')
                 ->toArray();
             $exhibitions = Exhibition::query()
                 ->whereNotIn('id', $exhibition_company)
-                ->whereIn('status',[2])
+                ->where('status',2)
                 ->get();
             DB::commit();
             $data = $exhibitions;

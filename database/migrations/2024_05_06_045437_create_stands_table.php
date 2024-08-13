@@ -10,16 +10,17 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('stands', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('size');
-            $table->integer('price');
-            $table->boolean('status')->default(0);
-            $table->foreignId('exhibition_id')->constrained('exhibitions')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->timestamps();
-        });
+    {Schema::create('stands', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('size');
+        $table->integer('price');
+        $table->boolean('status')->default(0);
+        $table->foreignId('exhibition_id')->constrained('exhibitions')->cascadeOnUpdate()->cascadeOnDelete();
+        $table->bigInteger('company_num')->nullable();
+        $table->timestamps();
+    });
+
     }
 
     /**

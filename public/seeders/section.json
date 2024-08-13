@@ -1,0 +1,12 @@
+[
+    {"id": 1, "name": "Technology and Innovation"},
+    {"id": 2, "name": "Food and Beverages"},
+    {"id": 3, "name": "Healthcare and Medicine"},
+    {"id": 4, "name": "Construction and Building"},
+    {"id": 5, "name": "Textile and Fashion"},
+    {"id": 6, "name": "Arts and Crafts"},
+    {"id": 7, "name": "Energy and Resources"},
+    {"id": 8, "name": "Agriculture and Food Technology"},
+    {"id": 9, "name": "Education and Training"},
+    {"id": 10, "name": "Tourism and Hospitality"}
+]
