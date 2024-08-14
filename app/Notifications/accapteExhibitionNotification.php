@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewExibition extends Notification
+class accapteExhibitionNotification extends Notification
 {
     use Queueable;
     private $exhibition_id,$exhibition_title;
@@ -43,7 +43,7 @@ class NewExibition extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'you have new exhibition request from organizer',
+            'your exhibition request is accepted ',
             $this->exhibition_title,
             $this->exhibition_id
         ];

@@ -25,8 +25,10 @@ use App\Models\Section;
 use App\Models\Sponser;
 use App\Models\Stand;
 use App\Models\User;
+use App\Notifications\accapteExhibitionNotification;
 use App\Notifications\NewExhibitionForVisitors;
 use App\Notifications\NewExibition;
+use App\Notifications\rejectExhibitionNotification;
 use App\Notifications\UpdateNotification;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Carbon;
@@ -79,7 +81,7 @@ class ExhibitionService
             ]);
             DB::commit();
             $data=$exhibition;
-            Notification::send($user,new NewExibition($exhibition['id']));
+            Notification::send($user,new NewExibition($exhibition['title'],$exhibition['id']));
             $message = 'Exhibition added successfully. ';
             $code = 200;
             return ['data' => $data, 'message' => $message, 'code' => $code];
@@ -141,6 +143,7 @@ class ExhibitionService
             Mail::to($user->email)->send(new AcceptExhibitionEmail($user->name,$exhibition->title));
             DB::commit();
             $data=$exhibition;
+            Notification::send($user, new accapteExhibitionNotification($exhibition['title'],$exhibition['id']));
             $message='Exhibition accepted successfully. ';
             $code = 200;
         }catch (\Exception $e) {
@@ -165,6 +168,8 @@ class ExhibitionService
             $exhibitionOrganizer->delete();
             DB::commit();
             $message='Exhibition rejected successfully. ';
+            Notification::send($user, new rejectExhibitionNotification($exhibition['title'],$exhibition['id']));
+
             $code = 200;
 
         }catch (\Exception $e) {
@@ -228,8 +233,8 @@ class ExhibitionService
                         if (request()->has('number_of_stands')) {
                             $exhibition['number_of_stands'] = $request['number_of_stands'];
                             $exhibition->save();
-                            $notification_message='the organizer update number of stand';
-                            Notification::send($user,new UpdateNotification($exhibition['id'],$notification_message));
+
+                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
 
                         }
                         if (request()->hasFile('cover_img')) {
@@ -237,16 +242,15 @@ class ExhibitionService
                             $exhibition['cover_img'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['cover_img']));
                             $exhibition->save();
-                            $notification_message='the organizer update cover image of stand';
-                            Notification::send($user,new UpdateNotification($exhibition['id'],$notification_message));
+                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
 
                         }
                         if (request()->hasFile('exhibition_map')) {
                             $img = Str::random(32) . "." . time() . '.' . request()->exhibition_map->getClientOriginalExtension();
                             $exhibition['exhibition_map'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
-                            $notification_message='the organizer update exhibition map';
-                            Notification::send($user,new UpdateNotification($exhibition['id'],$notification_message));
+
+                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
                             $exhibition->save();
                         }
                         DB::commit();

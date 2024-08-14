@@ -8,6 +8,7 @@ use App\Mail\SendCodeemail;
 use App\Mail\SendCodeResetPassword;
 use App\Models\Company;
 use App\Models\Employee;
+use App\Models\Notification;
 use App\Models\ResetCodePassword;
 use App\Models\User;
 use App\Models\Visitor;
@@ -218,6 +219,7 @@ class UserService
             $data[]=[$user,$company];
             $message = 'Verification code sent successfully to your email';
             $code = 200;
+
         }catch (\Exception $e) {
             DB::rollback();
             $data=[];

@@ -10,9 +10,12 @@ use Illuminate\Notifications\Notification;
 class UpdateNotification extends Notification
 {
 
-    public function __construct($exhibition_id)
+    protected $exhibition_id,$exhibition_title;
+
+    public function __construct($exhibition_id,$exhibition_title)
     {
         $this->exhibition_id=$exhibition_id;
+        $this->exhibition_title=$exhibition_title;
     }
 
     /**
@@ -38,8 +41,10 @@ class UpdateNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'you have new exhibition request from organizer',
-            'exhibition_id'=>$this->exhibition_id,
+
+        'the organizer update exhibition info',
+            $this->exhibition_id,
+            $this->exhibition_title,
         ];
     }
 }
