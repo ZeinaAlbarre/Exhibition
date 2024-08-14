@@ -26,6 +26,7 @@ use App\Models\Sponser;
 use App\Models\Stand;
 use App\Models\User;
 use App\Notifications\accapteExhibitionNotification;
+use App\Notifications\NewExhibitionForCompany;
 use App\Notifications\NewExhibitionForVisitors;
 use App\Notifications\NewExibition;
 use App\Notifications\rejectExhibitionNotification;
@@ -1304,6 +1305,11 @@ class ExhibitionService
                 $data = $exhibition;
                 $message = 'The exhibition status changed successfully.';
                 $code = 200;
+                if($status==3)
+                {
+                    $users=User::query()->where('userable_type','App\Models\Visitor')->get();
+                    Notification::send($users,new NewExhibitionForCompany($exhibition['title']));
+                }
                 if($status==3)
                 {
                     $users=User::query()->where('userable_type','App\Models\Visitor')->get();
