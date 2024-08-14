@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -20,7 +21,17 @@ class DatabaseSeeder extends Seeder
             SectionSeeder::class,
             ExhibitionSectionSeeder::class,
             ExhibitionCategorySeeder::class,
-            //StandSeeder::class,
+            StandSeeder::class,
+            visitorExhibitionSeeder::class,
+            EmployeeOrganizerSeeder::class,
+            SponserSeeder::class,
+            ExhibitionSponserSeeder::class,
+            FavSeeder::class,
+            RateSeeder::class,
+            PaymentSeeder::class,
+            SpeakerSeeder::class,
+            MediaSeeder::class,
+            ProductSeeder::class
         ]);
     }
 }

@@ -20,8 +20,15 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create();
 
+        $img=[
+            "company/1.jpg", "company/2.jpg", "company/3.jpg","company/4.jpg",
+            "company/5.jpg", "company/6.jpg", "company/7.jpg","company/8.jpg",
+            "company/9.jpg", "company/10.jpg", "company/11.jpg", "company/12.jpg",
+            "company/13.jpg",
+        ];
+        $l=1;
         // Create users and associate them with either Visitor or Company models
-        for ($i = 0; $i < 40; $i++) {
+        for ($i = 0; $i < 60; $i++) {
             $user = User::create([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
@@ -45,6 +52,7 @@ class UserSeeder extends Seeder
 
             } else {
                 // Create Company and associate with User
+                $num=rand(0,12);
                 $company = Company::create([
                     'company_name' => $faker->company,
                     'business_email' => $faker->companyEmail,
@@ -52,12 +60,22 @@ class UserSeeder extends Seeder
                     'office_address' => $faker->address,
                     'summary' => $faker->text,
                     'body' => $faker->paragraph,
-                    'status' => $faker->randomElement(['0', '1']),
+                    'status' => '0',
                     'commercial_register' => 'YXkJdDjSU4sQTkmsIW2HxF0TypFsT6DR.1722512725.png',
                     'number_of_employees' => $faker->randomNumber(3),
-                    'img' =>  'YXkJdDjSU4sQTkmsIW2HxF0TypFsT6DR.1722512725.png'
+                    'img' =>  $img[$num]
                 ]);
-
+                if($l<=20){
+                    $company->update([
+                       'status'=>'1',
+                    ]);
+                }
+                else{
+                    $company->update([
+                        'status'=>'0',
+                    ]);
+                }
+                $l+=1;
                 $user->userable()->associate($company)->save();
             }
         }

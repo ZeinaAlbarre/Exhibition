@@ -1,0 +1,12 @@
+[
+    {"id": 1, "img": "sponser/1.png","name": "Syriatel"},
+    {"id": 2, "img": "sponser/2.jpg","name": "MTN"},
+    {"id": 3, "img": "sponser/3.png","name": "Bono"},
+    {"id": 4, "img": "sponser/4.jpg","name": "Lays"},
+    {"id": 5, "img": "sponser/5.jpg","name": "Darnieto"},
+    {"id": 6, "img": "sponser/6.jpg","name": "Ethnio House"},
+    {"id": 7, "img": "sponser/7.jpg","name": "Monhamed Haroun"},
+    {"id": 8, "img": "sponser/8.jpg","name": "Apple"},
+    {"id": 9, "img": "sponser/9.jpg","name": "Samsung"},
+    {"id": 10, "img": "sponser/10.jpg","name": "The Creative Corner"}
+]

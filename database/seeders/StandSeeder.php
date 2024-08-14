@@ -25,8 +25,6 @@ class StandSeeder extends Seeder
         $filePath = public_path('seeders/exhibition.json');
         $fileContent = file_get_contents($filePath);
         $exhibitions =json_decode($fileContent,true);
-
-        // Define stand names
         $standNames = [
             "3K-32", "3K-31", "3K-30", "3K-29", "3K-28", "3K-27", "3K-26", "3K-25", "3K-24", "3K-23", "3L-21",
             "3K-21", "3K-20", "3K-19", "3K-18", "3K-17", "3K-16", "3K-15", "3K-14", "3K-13", "3K-12", "3K-11", "3K-10",
@@ -52,9 +50,14 @@ class StandSeeder extends Seeder
             "3m x 3m", "3m x 3m", "3m x 3m", "3m x 3m",
             "3m x 3m", "6m x 3m", "3m x 3m", "6m x 6m"
         ];
+        $company=[];
+        $l=1;
+        for($i=0;$i<20;$i++){
+            $company[$i]=$l;
+            $l+=1;
+        }
         DB::beginTransaction();
         try{
-
             foreach ($exhibitions as $exhibition){
                 $j=1;
                 $k=1;
@@ -90,7 +93,7 @@ class StandSeeder extends Seeder
                         $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
                         $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
                         Storage::disk('public')->put($qrCodePath, $qrCode);
-                        Qr::create([
+                        $qr=Qr::create([
                             'user_id' => $user['id'],
                             'exhibition_id' => $exhibition['id'],
                             'url' => $qrCodeData,
@@ -98,16 +101,17 @@ class StandSeeder extends Seeder
                             'created_at' => now(),
                             'updated_at' => now(),
                         ]);
+                        if($exhibition['status']==4){
+                            $qr->update([
+                                'Attended'=>1,
+                            ]);
+                        }
                         $j+=1;
                     }
                     else if($exhibition['status']==2){
-                        //$number=range(1,30);
-                        // shuffle($number);
                         for($i=0;$i<$stand['company_num'];$i++){
-                            //$num=array_rand($number);
-                            //unset($number[$num]);
                             Company_stand::query()->create([
-                                'company_id' => rand(1,20),
+                                'company_id' => $company[$i],
                                 'stand_id' => $stand['id'],
                                 'stand_price' => rand($stand['price'], $stand['price'] + 1000),
                                 'status' => 0,
