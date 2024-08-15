@@ -12,7 +12,9 @@ use App\Models\Qr;
 use App\Models\Stand;
 use App\Models\User;
 
+use App\Notifications\accapteCompanyRequestNotification;
 use App\Notifications\bookCompanyNotification;
+use App\Notifications\rejectCompanyRequestNotification;
 use App\Notifications\ticketBookingForVisitor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -141,10 +143,13 @@ class TicketServices
     {
         DB::beginTransaction();
         try {
+            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
+            $user=User::query()->findOrFail($user_id);
             $companyExhibition=Exhibition_company::query()->where('user_id',$user_id)
                 ->where('exhibition_id',$exhibition_id)->first();
             $companyExhibition['status']=1;
             $companyExhibition->save();
+            Notification::send($user,new accapteCompanyRequestNotification($exhibition['title'],$exhibition['id']));
             DB::commit();
             $data = $companyExhibition;
             $message = 'The company request accepted successfully';
@@ -165,9 +170,12 @@ class TicketServices
     {
         DB::beginTransaction();
         try {
+            $exhibition=Exhibition::query()->findOrFail($exhibition_id);
+            $user=User::query()->findOrFail($user_id);
             $companyExhibition=Exhibition_company::query()->where('user_id',$user_id)
                 ->where('exhibition_id',$exhibition_id)->first();
             $companyExhibition->delete();
+            Notification::send($user,new rejectCompanyRequestNotification($exhibition['title'],$exhibition['id']));
             DB::commit();
             $data = [];
             $message = 'The company request rejected successfully';
@@ -354,7 +362,7 @@ class TicketServices
             }
             else {
                 $message = 'The stand has been successfully booked';
-
+                Notification::send($user,new bookCompanyNotification(''));
             }
 
             $data = $companyS;

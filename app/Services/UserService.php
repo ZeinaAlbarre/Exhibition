@@ -8,7 +8,6 @@ use App\Mail\SendCodeemail;
 use App\Mail\SendCodeResetPassword;
 use App\Models\Company;
 use App\Models\Employee;
-use App\Models\Notification;
 use App\Models\ResetCodePassword;
 use App\Models\User;
 use App\Models\Visitor;
@@ -19,6 +18,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Notification;
+
 use Illuminate\Support\Str;
 use PHPUnit\Exception;
 use Spatie\Permission\Models\Role;
@@ -52,6 +53,8 @@ class UserService
             Mail::to($user['email'])->send(new SendCodeemail($code_v));
 
 
+
+
             $user->userable()->associate($visitor);
             $user->save();
 
@@ -81,7 +84,7 @@ class UserService
     {
         DB::beginTransaction();
         try{
-           $user = User::query()->where('email', $request['email'])->first();
+            $user = User::query()->where('email', $request['email'])->first();
             $companyName = Company::query()->where('company_name', $request['company_name'])->first();
             $companyBusinessEmail = Company::query()->where('business_email', $request['business_email'])->first();
             if (($user||$companyName||$companyBusinessEmail)) {
@@ -90,7 +93,7 @@ class UserService
                     $user->delete();
                     $company->delete();
                 }
-               else if(!$user&&$companyName){
+                else if(!$user&&$companyName){
                     $userId=User::query()->where('userable_id',$companyName['id'])->first();
                     if(!is_null($userId['code']))
                     {
@@ -107,13 +110,13 @@ class UserService
                     }
                 }
             }
-           $user1 = User::query()->where('email', $request['email'])->first();
+            $user1 = User::query()->where('email', $request['email'])->first();
             $companyName1 = Company::query()->where('company_name', $request['company_name'])->first();
             $companyBusinessEmail1 = Company::query()->where('business_email', $request['business_email'])->first();
             if ($user1||$companyName1||$companyBusinessEmail1) {
                 if ($user1 && is_null($user1['code'])) {
                     if ($user1 && $companyName1 && $companyBusinessEmail1) {
-                         DB::commit();
+                        DB::commit();
                         $data = [];
                         $message = 'The email and company name and business email has already been taken. ';
                         $code = 200;
@@ -139,7 +142,7 @@ class UserService
                     }
 
                 }
-              if($companyName1){
+                if($companyName1){
                     $userId=User::query()->where('userable_id',$companyName1['id'])->first();
                     if(is_null($userId['code']))
                     {
@@ -206,8 +209,9 @@ class UserService
             $user->save();
 
 
-             $user2=User::query()->where('id',2)->first();
-             Notification::send($user2,new requestToAppRegisterNotification($company['company_name']));
+            $user2=User::query()->where('id',2)->first();
+            Notification::send($user2,new requestToAppRegisterNotification($company['company_name']));
+
             $companyRole = Role::query()->where('name','company')->first();
             $user->assignRole($companyRole);
 

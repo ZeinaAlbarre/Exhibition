@@ -46,4 +46,38 @@ class Report extends Controller
             return Response::Error($data,$message);
         }
     }
+
+    public function ExcelCompanyAppReport()
+    {
+        $data=[];
+        try{
+            $data=$this->reportService->ExcelCompanyAppReport();
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+    public function ExcelVisitorExhibitionReport($exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->reportService->ExcelVisitorExhibitionReport($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+    public function ExcelVisitorCompanyExhibitionReport($exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->reportService->ExcelVisitorCompanyExhibitionReport($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
 }

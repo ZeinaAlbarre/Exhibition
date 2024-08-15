@@ -8,6 +8,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RateController;
+use App\Http\Controllers\Report;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\VisitorController;
@@ -151,14 +152,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/addMoney/{user_id}', 'addMoney');
         Route::get('/showMoney', 'showMoney');
         Route::get('/showUserMoney/{user_id}', 'showUserMoney');
-
+    });
     Route::controller(\App\Http\Controllers\NotificationController::class)->group(function () {
-
         Route::post('send', 'send');
-
-    }
-    );
-
     });
 
     Route::controller(CompanyController::class)->group(function (){
@@ -185,15 +181,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('updateRate/{id}', 'updateRate');
         Route::get('showExhibitionRate/{id}', 'showExhibitionRate');
         Route::get('showUserExhibitionRate/{id}', 'showUserExhibitionRate');
-
     });
-
     Route::controller(VisitorController::class)->group(function (){
         Route::get('showVisitors', 'showVisitors');
         Route::post('searchVisitor', 'searchVisitor');
         Route::get('removeVisitor/{user_id}', 'removeVisitor');
     });
-
 
     Route::get('showUnreadNotifications', [NotificationController::class, 'showUnreadNotifications']);
     Route::post('markNotificationAsRead/{id}', [NotificationController::class, 'markNotificationAsRead']);
@@ -202,3 +195,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::controller(Report::class)->group(function (){
+    Route::get('getExhibitionReport/{exhibition_id}', 'getExhibitionReport');
+    Route::get('getExhibitionAverageRating', 'getExhibitionAverageRating');
+    Route::get('ExcelCompanyAppReport', 'ExcelCompanyAppReport');
+    Route::get('ExcelVisitorExhibitionReport/{id}', 'ExcelVisitorExhibitionReport');
+    Route::get('ExcelVisitorCompanyExhibitionReport/{id}', 'ExcelVisitorCompanyExhibitionReport');
+
+});

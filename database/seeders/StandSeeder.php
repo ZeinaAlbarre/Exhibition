@@ -65,7 +65,7 @@ class StandSeeder extends Seeder
                     $stand=Stand::query()->create([
                         'name' => $standNames[$i],
                         'size' => $standSize[$i],
-                        'price' => rand(500, 1000),
+                        'price' => rand(20, 50),
                         'status' => ($exhibition['status'] === 2) ? 0 : 1,
                         'exhibition_id' => $exhibition['id'],
                         'company_num' => rand(5,13),
@@ -76,7 +76,7 @@ class StandSeeder extends Seeder
                         $company_stand=Company_stand::query()->create([
                             'company_id' => rand(1,15),
                             'stand_id' => $stand['id'],
-                            'stand_price' => rand($stand['price'], $stand['price'] + 1000),
+                            'stand_price' => rand($stand['price'], $stand['price'] + 30),
                             'status' => 1,
                             'created_at' => now(),
                             'updated_at' => now(),
@@ -113,7 +113,7 @@ class StandSeeder extends Seeder
                             Company_stand::query()->create([
                                 'company_id' => $company[$i],
                                 'stand_id' => $stand['id'],
-                                'stand_price' => rand($stand['price'], $stand['price'] + 50),
+                                'stand_price' => rand($stand['price'], $stand['price'] + 30),
                                 'status' => 0,
                                 'created_at' => now(),
                                 'updated_at' => now(),

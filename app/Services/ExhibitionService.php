@@ -25,12 +25,11 @@ use App\Models\Section;
 use App\Models\Sponser;
 use App\Models\Stand;
 use App\Models\User;
-use App\Notifications\accapteCompanyRequestNotification;
 use App\Notifications\accapteExhibitionNotification;
+use App\Notifications\bookCompanyNotification;
 use App\Notifications\NewExhibitionForCompany;
 use App\Notifications\NewExhibitionForVisitors;
 use App\Notifications\NewExibition;
-use App\Notifications\rejectCompanyRequestNotification;
 use App\Notifications\rejectExhibitionNotification;
 use App\Notifications\UpdateNotification;
 use Illuminate\Console\Scheduling\Schedule;
@@ -144,6 +143,7 @@ class ExhibitionService
             $exhibition['status']=1;
             $exhibition->save();
             Mail::to($user->email)->send(new AcceptExhibitionEmail($user->name,$exhibition->title));
+            Notification::send($user, new accapteExhibitionNotification($exhibition['title'],$exhibition['id']));
             DB::commit();
             $data=$exhibition;
             $message='Exhibition accepted successfully. ';
@@ -168,9 +168,9 @@ class ExhibitionService
             Mail::to($user->email)->send(new RejectExhibitionEmail($user->name,$exhibition->title));
             $exhibition->delete();
             $exhibitionOrganizer->delete();
+            Notification::send($user, new rejectExhibitionNotification($exhibition['title'],$exhibition['id']));
             DB::commit();
             $message='Exhibition rejected successfully. ';
-
             $code = 200;
 
         }catch (\Exception $e) {
@@ -234,8 +234,9 @@ class ExhibitionService
                         if (request()->has('number_of_stands')) {
                             $exhibition['number_of_stands'] = $request['number_of_stands'];
                             $exhibition->save();
-
+                            $notification_message='the organizer update number of stand';
                             Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
+
 
                         }
                         if (request()->hasFile('cover_img')) {
@@ -243,6 +244,7 @@ class ExhibitionService
                             $exhibition['cover_img'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['cover_img']));
                             $exhibition->save();
+                            $notification_message='the organizer update cover image of stand';
                             Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
 
                         }
@@ -250,7 +252,7 @@ class ExhibitionService
                             $img = Str::random(32) . "." . time() . '.' . request()->exhibition_map->getClientOriginalExtension();
                             $exhibition['exhibition_map'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
-
+                           ;
                             Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
                             $exhibition->save();
                         }
@@ -692,6 +694,7 @@ class ExhibitionService
                 'img' => $qrCodePath
             ]);
             Mail::to($company['business_email'])->send(new AcceptCompanyRequest($company->company_name,$exhibition->title,$exhibition->location,$exhibition->start_date));
+            Notification::send($user,new bookCompanyNotification($standPrice['stand_price']));
             DB::commit();
             $data=$exhibitionCompany;
             $message='company accepted successfully. ';
@@ -714,9 +717,7 @@ class ExhibitionService
             $exhibition=Exhibition::query()->findOrFail($stand['exhibition_id']);
             $companyStand=Company_stand::query()->where('stand_id',$stand_id)->where('company_id',$company_id)->first();
             $companyStand->delete();
-            $user=User::query()->where('userable_id',$company['id'])->first();
             Mail::to($company->business_email)->send(new RejectCompanyRequest($company->company_name,$exhibition->title));
-
             DB::commit();
             $data=[];
             $message='company rejected successfully. ';
@@ -1307,15 +1308,15 @@ class ExhibitionService
                 $data = $exhibition;
                 $message = 'The exhibition status changed successfully.';
                 $code = 200;
-                if($status==2)
-                {
-                    $users=User::query()->where('userable_type','App\Models\Visitor')->get();
-                    Notification::send($users,new NewExhibitionForCompany($exhibition['title']));
-                }
                 if($status==3)
                 {
                     $users=User::query()->where('userable_type','App\Models\Visitor')->get();
                     Notification::send($users,new NewExhibitionForVisitors($exhibition['title']));
+                }
+                if($status==2)
+                {
+                    $users=User::query()->where('userable_type','App\Models\Company')->get();
+                    Notification::send($users,new NewExhibitionForCompany($exhibition['title']));
                 }
             }
             return ['data' => $data, 'message' => $message, 'code' => $code];

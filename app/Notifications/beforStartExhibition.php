@@ -43,7 +43,7 @@ class beforStartExhibition extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'the Exhibition will start after 3 day'
         ];
     }
 }

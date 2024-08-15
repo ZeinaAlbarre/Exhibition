@@ -225,6 +225,7 @@ class companyService
             $user = Auth::user();
             $exhibition_company = Exhibition_company::query()
                 ->where('user_id', $user->id)
+                ->whereIn('status',[1,2])
                 ->pluck('exhibition_id')
                 ->toArray();
             $exhibitions = Exhibition::query()
