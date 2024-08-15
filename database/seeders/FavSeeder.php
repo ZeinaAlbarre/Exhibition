@@ -35,7 +35,7 @@ class FavSeeder extends Seeder
         $exhibitions =json_decode($fileContent,true);
         foreach ($exhibitions as $exhibition){
             if($exhibition['status']>=3){
-                $num=rand(5,20);
+                $num=rand(2,4);
                 for($i=0;$i<$num;$i++){
                     Favorite::query()->create([
                         'user_id'=>$visitor[$i],

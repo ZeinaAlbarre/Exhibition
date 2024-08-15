@@ -42,38 +42,35 @@ class ProductSeeder extends Seeder
             "Strawberry Jam","Apple Juice","Organic Orange Juice","Classic Chips",
             "Salt & Vinegar Chips","Hand Cooked Hot Chips"
         ];
-        $company=Company::query()->where('status',1)->get();
         $l=1;
-        foreach ($company as $item){
-            $user=User::query()->where('userable_id',$item['id'])->where('userable_type','App\Models\Company')->first();
-            if($l % 5 ==0){
-                for($i=0;$i<5;$i++){
-                    Product::query()->create([
-                        'info'=>$n[$i],
-                        'img' => $t[$i],
-                        'user_id' => $user['id'],
-                    ]);
+        for($m=1;$m<=15;$m++) {
+            $user = User::query()->where('userable_id', $m)->where('userable_type', 'App\Models\Company')->first();
+                if ($l <= 5) {
+                    for ($i = 0; $i < 5; $i++) {
+                        Product::query()->create([
+                            'info' => $n[$i],
+                            'img' => $t[$i],
+                            'user_id' => $user['id'],
+                        ]);
+                    }
+                } else if ($l >= 6 && $l <= 10) {
+                    for ($i = 0; $i < 5; $i++) {
+                        Product::query()->create([
+                            'info' => $k[$i],
+                            'img' => $f[$i],
+                            'user_id' => $user['id'],
+                        ]);
+                    }
+                } else if ($l >= 11 && $l <= 15) {
+                    for ($i = 5; $i < 10; $i++) {
+                        Product::query()->create([
+                            'info' => $k[$i],
+                            'img' => $f[$i],
+                            'user_id' => $user['id'],
+                        ]);
+                    }
                 }
+                $l += 1;
             }
-            else if($l % 2==0){
-                for($i=0;$i<5;$i++){
-                    Product::query()->create([
-                        'info'=>$k[$i],
-                        'img' => $f[$i],
-                        'user_id' => $user['id'],
-                    ]);
-                }
-            }
-            else{
-                for($i=5;$i<10;$i++){
-                    Product::query()->create([
-                        'info'=>$k[$i],
-                        'img' => $f[$i],
-                        'user_id' => $user['id'],
-                    ]);
-                }
-            }
-            $l+=1;
         }
-    }
 }

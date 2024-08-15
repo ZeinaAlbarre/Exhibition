@@ -93,18 +93,24 @@ class companyService
 
     public function showProducts($id): array
     {
-        $data = [];
+        DB::beginTransaction();
         try {
             $products = Product::query()->where('user_id',$id)->get();
+            DB::commit();
             $data = $products;
-            $message = 'Products show successfully.';
+            $message = '';
             $code = 200;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
         } catch (\Exception $e) {
-            $message = $e->getMessage();
+            DB::rollback();
+            $data = [];
+            $message = 'Error during showing exhibition Request. Please try again ';
             $code = 500;
+            return ['data' => $data, 'message' => $message, 'code' => $code];
+
         }
 
-        return ['data' => $data, 'message' => $message, 'code' => $code];
     }
 
     public function showCompanies()

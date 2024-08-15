@@ -27,22 +27,20 @@ class UserSeeder extends Seeder
             "company/13.jpg",
         ];
         $l=1;
-        // Create users and associate them with either Visitor or Company models
-        for ($i = 0; $i < 60; $i++) {
-            $user = User::create([
+        for ($i = 0; $i < 40; $i++) {
+            $user= User::create([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
                 'phone' => $faker->phoneNumber,
                 'password' => bcrypt('password'),
                 'password_confirmation' => bcrypt('password'),
-                'token' => Str::random(60),
                 'code' => $faker->randomNumber(6),
                 'expire_at' => now()->addMinutes(10),
                 'code_attempts' => 0
             ]);
-
+            $user['token']=$user->createToken("token")->plainTextToken;
+            $user->save();
             if ($i % 2 == 0) {
-                // Create Visitor and associate with User
                 $visitor = Visitor::create([
                     'gender' => $faker->randomElement(['male', 'female']),
                     'birth_date' => $faker->date
@@ -51,7 +49,6 @@ class UserSeeder extends Seeder
                 $user->userable()->associate($visitor)->save();
 
             } else {
-                // Create Company and associate with User
                 $num=rand(0,12);
                 $company = Company::create([
                     'company_name' => $faker->company,
@@ -60,12 +57,11 @@ class UserSeeder extends Seeder
                     'office_address' => $faker->address,
                     'summary' => $faker->text,
                     'body' => $faker->paragraph,
-                    'status' => '0',
                     'commercial_register' => 'YXkJdDjSU4sQTkmsIW2HxF0TypFsT6DR.1722512725.png',
                     'number_of_employees' => $faker->randomNumber(3),
                     'img' =>  $img[$num]
                 ]);
-                if($l<=20){
+                if($l<=15){
                     $company->update([
                        'status'=>'1',
                     ]);
@@ -74,6 +70,8 @@ class UserSeeder extends Seeder
                     $company->update([
                         'status'=>'0',
                     ]);
+                    $user['token']=null;
+                    $user->save();
                 }
                 $l+=1;
                 $user->userable()->associate($company)->save();

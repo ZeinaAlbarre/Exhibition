@@ -26,7 +26,7 @@ class PaymentSeeder extends Seeder
     {
         $user=[];
         $j=7;
-        for($i=0;$i<=39;$i++){
+        for($i=0;$i<=52;$i++){
             $user[$i]=$j;
             $j++;
         }
