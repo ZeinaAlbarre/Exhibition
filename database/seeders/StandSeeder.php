@@ -52,7 +52,7 @@ class StandSeeder extends Seeder
         ];
         $company=[];
         $l=1;
-        for($i=0;$i<20;$i++){
+        for($i=0;$i<15;$i++){
             $company[$i]=$l;
             $l+=1;
         }
@@ -68,13 +68,13 @@ class StandSeeder extends Seeder
                         'price' => rand(500, 1000),
                         'status' => ($exhibition['status'] === 2) ? 0 : 1,
                         'exhibition_id' => $exhibition['id'],
-                        'company_num' => rand(5,15),
+                        'company_num' => rand(5,13),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
                     if($exhibition['status']==3 || $exhibition['status']==4){
                         $company_stand=Company_stand::query()->create([
-                            'company_id' => rand(1,20),
+                            'company_id' => rand(1,15),
                             'stand_id' => $stand['id'],
                             'stand_price' => rand($stand['price'], $stand['price'] + 1000),
                             'status' => 1,
@@ -113,14 +113,38 @@ class StandSeeder extends Seeder
                             Company_stand::query()->create([
                                 'company_id' => $company[$i],
                                 'stand_id' => $stand['id'],
-                                'stand_price' => rand($stand['price'], $stand['price'] + 1000),
+                                'stand_price' => rand($stand['price'], $stand['price'] + 50),
                                 'status' => 0,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+                            $user=User::query()->where('userable_id',$company[$i])->where('userable_type','App\Models\Company')->first();
+                            Exhibition_company::query()->create([
+                                'user_id'=>$user['id'],
+                                'exhibition_id'=>$exhibition['id'],
+                                'status'=>1,
                                 'created_at' => now(),
                                 'updated_at' => now(),
                             ]);
                         }
                     }
                     $k+=1;
+                }
+                if($exhibition['status']==2){
+                    for($i=0;$i<14;$i++){
+                        $user=User::query()->where('userable_id',$company[$i])->where('userable_type','App\Models\Company')->first();
+                        $exhibition_company=Exhibition_company::query()->where('user_id',$user['id'])
+                            ->where('exhibition_id',$exhibition['id'])->first();
+                        if(!$exhibition_company){
+                            Exhibition_company::query()->create([
+                                'user_id'=>$user['id'],
+                                'exhibition_id'=>$exhibition['id'],
+                                'status'=>0,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+                        }
+                    }
                 }
             }
             DB::commit();

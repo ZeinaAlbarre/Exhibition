@@ -10,13 +10,14 @@ use Illuminate\Notifications\Notification;
 class NewExibition extends Notification
 {
     use Queueable;
-    private $exhibition_id;
+    private $exhibition_id,$exhibition_title;
     /**
      * Create a new notification instance.
      */
-    public function __construct($exhibition_id)
+    public function __construct($exhibition_title,$exhibition_id)
     {
-        $this->exhibition_id=$exhibition_id;
+        $this->exhibition_title=$exhibition_title;
+        $this->exhibition_id =$exhibition_id;
     }
 
     /**
@@ -43,7 +44,8 @@ class NewExibition extends Notification
     {
         return [
             'you have new exhibition request from organizer',
-            'exhibition_id'=>$this->exhibition_id,
+            $this->exhibition_title,
+            $this->exhibition_id
         ];
     }
 }

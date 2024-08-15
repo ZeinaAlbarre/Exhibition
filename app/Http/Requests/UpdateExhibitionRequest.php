@@ -25,7 +25,7 @@ class UpdateExhibitionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'=>'required|string|max:30',
+            'title'=>'required|string|max:60',
             'cover_img'=>'image|mimes:jpeg,png,jpg|nullable',
             'body'=>'required|string',
             'start_date'=>'required|date',

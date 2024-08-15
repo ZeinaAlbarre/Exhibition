@@ -340,8 +340,6 @@ class TicketServices
                             'stand_price' => $item['stand_price'],
                         ]);
                         $stand['company_num']+=1;
-                        $stand['status']=1;
-                        $stand->save();
                     }
                 }
             }
