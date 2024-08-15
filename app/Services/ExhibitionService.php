@@ -25,10 +25,12 @@ use App\Models\Section;
 use App\Models\Sponser;
 use App\Models\Stand;
 use App\Models\User;
+use App\Notifications\accapteCompanyRequestNotification;
 use App\Notifications\accapteExhibitionNotification;
 use App\Notifications\NewExhibitionForCompany;
 use App\Notifications\NewExhibitionForVisitors;
 use App\Notifications\NewExibition;
+use App\Notifications\rejectCompanyRequestNotification;
 use App\Notifications\rejectExhibitionNotification;
 use App\Notifications\UpdateNotification;
 use Illuminate\Console\Scheduling\Schedule;
@@ -144,7 +146,6 @@ class ExhibitionService
             Mail::to($user->email)->send(new AcceptExhibitionEmail($user->name,$exhibition->title));
             DB::commit();
             $data=$exhibition;
-            Notification::send($user, new accapteExhibitionNotification($exhibition['title'],$exhibition['id']));
             $message='Exhibition accepted successfully. ';
             $code = 200;
         }catch (\Exception $e) {
@@ -169,7 +170,6 @@ class ExhibitionService
             $exhibitionOrganizer->delete();
             DB::commit();
             $message='Exhibition rejected successfully. ';
-            Notification::send($user, new rejectExhibitionNotification($exhibition['title'],$exhibition['id']));
 
             $code = 200;
 
@@ -714,7 +714,9 @@ class ExhibitionService
             $exhibition=Exhibition::query()->findOrFail($stand['exhibition_id']);
             $companyStand=Company_stand::query()->where('stand_id',$stand_id)->where('company_id',$company_id)->first();
             $companyStand->delete();
+            $user=User::query()->where('userable_id',$company['id'])->first();
             Mail::to($company->business_email)->send(new RejectCompanyRequest($company->company_name,$exhibition->title));
+
             DB::commit();
             $data=[];
             $message='company rejected successfully. ';
@@ -1305,7 +1307,7 @@ class ExhibitionService
                 $data = $exhibition;
                 $message = 'The exhibition status changed successfully.';
                 $code = 200;
-                if($status==3)
+                if($status==2)
                 {
                     $users=User::query()->where('userable_type','App\Models\Visitor')->get();
                     Notification::send($users,new NewExhibitionForCompany($exhibition['title']));

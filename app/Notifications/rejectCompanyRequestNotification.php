@@ -7,9 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class accapteCompanyRequestNotification extends Notification
+class rejectCompanyRequestNotification extends Notification
 {
-
     use Queueable;
     protected $exhibition_title,$exhibition_id;
     /**
@@ -44,7 +43,7 @@ class accapteCompanyRequestNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'Congratulations, your  request to join the exhibition has been accepted',
+            'your  request to join the exhibition has been rejected',
             $this->exhibition_title,
             $this->exhibition_id
         ];

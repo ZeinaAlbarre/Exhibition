@@ -12,6 +12,7 @@ use App\Models\Qr;
 use App\Models\Stand;
 use App\Models\User;
 
+use App\Notifications\bookCompanyNotification;
 use App\Notifications\ticketBookingForVisitor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -355,6 +356,7 @@ class TicketServices
             }
             else {
                 $message = 'The stand has been successfully booked';
+
             }
 
             $data = $companyS;

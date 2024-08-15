@@ -7,17 +7,18 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class accapteCompanyNotification extends Notification
+class requestToAppRegisterNotification extends Notification
 {
     use Queueable;
-    protected $message;
+
+    protected $data;
     /**
      * Create a new notification instance.
      */
-    public function __construct($message)
+    public function __construct($data)
     {
 
-        $this->message=$message;
+        $this->data=$data;
     }
 
     /**
@@ -34,7 +35,6 @@ class accapteCompanyNotification extends Notification
      * Get the mail representation of the notification.
      */
 
-
     /**
      * Get the array representation of the notification.
      *
@@ -43,8 +43,9 @@ class accapteCompanyNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            $this->message,
-        ];
+            'you have new request to register app from company',
+            $this->data,
 
+        ];
     }
 }

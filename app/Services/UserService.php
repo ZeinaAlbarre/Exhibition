@@ -12,6 +12,7 @@ use App\Models\Notification;
 use App\Models\ResetCodePassword;
 use App\Models\User;
 use App\Models\Visitor;
+use App\Notifications\requestToAppRegisterNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -205,6 +206,8 @@ class UserService
             $user->save();
 
 
+             $user2=User::query()->where('id',2)->first();
+             Notification::send($user2,new requestToAppRegisterNotification($company['company_name']));
             $companyRole = Role::query()->where('name','company')->first();
             $user->assignRole($companyRole);
 
