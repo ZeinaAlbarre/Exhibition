@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\User;
 use App\Models\Visitor;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -26,8 +27,13 @@ class UserSeeder extends Seeder
             "company/9.jpg", "company/10.jpg", "company/11.jpg", "company/12.jpg",
             "company/13.jpg",
         ];
+
+
         $l=1;
         for ($i = 0; $i < 40; $i++) {
+            $eighteenYearsAgo = Carbon::now()->subYears(18);
+            $nineteenYearsAgo = Carbon::now()->subYears(40);
+            $birthDate = $faker->dateTimeBetween($nineteenYearsAgo, $eighteenYearsAgo);
             $user= User::create([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
@@ -43,7 +49,7 @@ class UserSeeder extends Seeder
             if ($i % 2 == 0) {
                 $visitor = Visitor::create([
                     'gender' => $faker->randomElement(['male', 'female']),
-                    'birth_date' => $faker->date
+                    'birth_date' => $birthDate
                 ]);
 
                 $user->userable()->associate($visitor)->save();
