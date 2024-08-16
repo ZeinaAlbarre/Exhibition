@@ -47,11 +47,11 @@ class Report extends Controller
         }
     }
 
-    public function ExcelCompanyAppReport()
+    public function ExcelVisitorAppReport()
     {
         $data=[];
         try{
-            $data=$this->reportService->ExcelCompanyAppReport();
+            $data=$this->reportService->ExcelVisitorAppReport();
             return Response::Success($data['data'],$data['message']);
         }catch (\Throwable $th){
             $message=$th->getMessage();
@@ -74,6 +74,39 @@ class Report extends Controller
         $data=[];
         try{
             $data=$this->reportService->ExcelVisitorCompanyExhibitionReport($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+    public function standMoneyReport($exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->reportService->standMoneyReport($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+    public function AgeVisitor($exhibition_id)
+    {
+        $data=[];
+        try{
+            $data=$this->reportService->AgeVisitor($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+    public function AgeAppVisitor()
+    {
+        $data=[];
+        try{
+            $data=$this->reportService->AgeAppVisitor();
             return Response::Success($data['data'],$data['message']);
         }catch (\Throwable $th){
             $message=$th->getMessage();
