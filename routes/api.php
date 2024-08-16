@@ -192,14 +192,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('markNotificationAsRead/{id}', [NotificationController::class, 'markNotificationAsRead']);
     Route::get('markAllAsRead', [NotificationController::class, 'markAllAsRead']);
 
+    Route::controller(Report::class)->group(function (){
+        Route::get('getExhibitionReport/{exhibition_id}', 'getExhibitionReport');
+        Route::get('getExhibitionAverageRating', 'getExhibitionAverageRating');
+        Route::get('ExcelCompanyAppReport', 'ExcelCompanyAppReport');
+        Route::get('ExcelVisitorExhibitionReport/{id}', 'ExcelVisitorExhibitionReport');
+        Route::get('ExcelVisitorCompanyExhibitionReport/{id}', 'ExcelVisitorCompanyExhibitionReport');
+        Route::get('AgeVisitor/{exhibition_id}', 'AgeVisitor');
+        Route::get('standMoneyReport/{exhibition_id}', 'standMoneyReport');
+        Route::get('AgeAppVisitor', 'AgeAppVisitor');
+
+    });
 
 });
 
-Route::controller(Report::class)->group(function (){
-    Route::get('getExhibitionReport/{exhibition_id}', 'getExhibitionReport');
-    Route::get('getExhibitionAverageRating', 'getExhibitionAverageRating');
-    Route::get('ExcelCompanyAppReport', 'ExcelCompanyAppReport');
-    Route::get('ExcelVisitorExhibitionReport/{id}', 'ExcelVisitorExhibitionReport');
-    Route::get('ExcelVisitorCompanyExhibitionReport/{id}', 'ExcelVisitorCompanyExhibitionReport');
 
-});
