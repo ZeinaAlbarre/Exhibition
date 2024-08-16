@@ -31,19 +31,19 @@ class visitorExhibitionSeeder extends Seeder
             foreach ($exhibitions as $exhibition)
             {
                 if($exhibition['status']==3){
-                    $i=5;
-                    for($i=0;$i<rand(10,20);$i++){
-                        $i+=2;
+                    $j=7;
+                    for($i=0;$i<rand(5,10);$i++){
+                        $j+=2;
                         $exhibitionVisitor = Exhibition_visitor::query()->create([
                             'exhibition_id' => $exhibition['id'],
-                            'user_id' => $i,
+                            'user_id' => $j,
                         ]);
                         $qrCodeData = $exhibitionVisitor->id . '-' . now()->timestamp;
                         $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
                         $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
                         Storage::disk('public')->put($qrCodePath, $qrCode);
                         Qr::create([
-                            'user_id' => $i,
+                            'user_id' => $j,
                             'exhibition_id' => $exhibition['id'],
                             'url' => $qrCodeData,
                             'img' => $qrCodePath,
@@ -51,23 +51,23 @@ class visitorExhibitionSeeder extends Seeder
                     }
                 }
                 else if($exhibition['status']==4){
-                    $i=5;
-                    for($i=0;$i<rand(20,30);$i++){
-                        $i+=2;
+                    $j=5;
+                    for($i=0;$i<rand(10,20);$i++){
+                        $j+=2;
                         $exhibitionVisitor = Exhibition_visitor::query()->create([
                             'exhibition_id' => $exhibition['id'],
-                            'user_id' => $i,
+                            'user_id' => $j,
                         ]);
                         $qrCodeData = $exhibitionVisitor->id . '-' . now()->timestamp;
                         $qrCode = QrCode::format('png')->size(300)->generate($qrCodeData);
                         $qrCodePath = 'qrcodes/' . $qrCodeData . '.png';
                         Storage::disk('public')->put($qrCodePath, $qrCode);
                         $qr=Qr::create([
-                            'user_id' => $i,
+                            'user_id' => $j,
                             'exhibition_id' => $exhibition['id'],
                             'url' => $qrCodeData,
                             'img' => $qrCodePath,
-                            'Attended'=>1
+                            'Attended'=>'1'
                         ]);
                     }
                 }
