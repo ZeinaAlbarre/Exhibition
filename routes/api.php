@@ -201,6 +201,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('AgeVisitor/{exhibition_id}', 'AgeVisitor');
         Route::get('standMoneyReport/{exhibition_id}', 'standMoneyReport');
         Route::get('AgeAppVisitor', 'AgeAppVisitor');
+        Route::get('financialStudyReport/{exhibition_id}', 'financialStudyReport');
 
     });
 

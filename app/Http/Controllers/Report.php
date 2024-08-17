@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Responses\Response;
+use App\Models\Exhibition;
 use App\Models\Exhibition_company;
 use App\Models\Exhibition_visitor;
 use App\Models\Rate;
@@ -113,4 +114,18 @@ class Report extends Controller
             return Response::Error($data,$message);
         }
     }
+
+
+    public function financialStudyReport($exhibition_id){
+        $data=[];
+        try{
+            $data=$this->reportService->financialStudyReport($exhibition_id);
+            return Response::Success($data['data'],$data['message']);
+        }catch (\Throwable $th){
+            $message=$th->getMessage();
+            return Response::Error($data,$message);
+        }
+    }
+
+
 }

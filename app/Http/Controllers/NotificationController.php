@@ -30,56 +30,6 @@ class NotificationController extends Controller
 
     }
 
-    public function notifyUpcomingScheduales()
-    {
-
-        $now = Carbon::now();
-
-        $upcomingScheduales = Scheduale::where('date', $now->toDateString())
-            ->where('time', '>=', $now->addHours(3)->toTimeString())
-            ->get();
-
-        foreach ($upcomingScheduales as $scheduale) {
-            $exhibition = Exhibition::find($scheduale->exhibition_id);
-
-            if ($exhibition) {
-
-                $exs = Exhibition_visitor::query()->where('exhibition_id',$exhibition['id'])->get();
-                foreach ($exs as $ex) {
-                    $visitor = User::query()->where('id', $ex['user_id'])->where('userable_id', 'App\Models\Visitor')->first();
-                    Notification::send($visitor, new SchedualeNotification($scheduale['topic_name'],$exhibition->title));
-                }
-            }
-        }
-
-        return response()->json(['message' => 'Notifications sent successfully!']);
-    }
-
-    public function remindVisitorsBeforeExhibition()
-{
-
-    $threeDaysLater = Carbon::now()->addDays(3)->toDateString();
-
-
-    $upcomingExhibitions = Exhibition::where('start_date', $threeDaysLater)->get();
-
-    foreach ($upcomingExhibitions as $exhibition) {
-
-        $exs = Exhibition_visitor::where('exhibition_id', $exhibition->id)->get();
-
-        foreach ($exs as $ex) {
-            $visitor = User::where('id', $ex->user_id)->where('userable_id', 'App\Models\Visitor')->first();
-
-
-            if ($visitor) {
-                Notification::send($visitor, new beforStartExhibition($exhibition->title, $exhibition->start_date));
-            }
-        }
-    }
-
-    return response()->json(['message' => 'Reminders sent successfully!']);
-}
-
     public function showUnreadNotifications()
     {
         $unreadNotifications = Auth::user()->unreadNotifications;

@@ -235,7 +235,6 @@ class ExhibitionService
                             $exhibition['number_of_stands'] = $request['number_of_stands'];
                             $exhibition->save();
                             $notification_message='the organizer update number of stand';
-                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
 
 
                         }
@@ -245,18 +244,17 @@ class ExhibitionService
                             Storage::disk('public')->put($img, file_get_contents($request['cover_img']));
                             $exhibition->save();
                             $notification_message='the organizer update cover image of stand';
-                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
 
                         }
                         if (request()->hasFile('exhibition_map')) {
                             $img = Str::random(32) . "." . time() . '.' . request()->exhibition_map->getClientOriginalExtension();
                             $exhibition['exhibition_map'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
-                           ;
-                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
+
                             $exhibition->save();
                         }
                         DB::commit();
+
                         $data = $exhibition;
                         $message = 'Exhibition updated successfully.';
                         $code = 400;
@@ -265,6 +263,9 @@ class ExhibitionService
                 } else {
 
                     $exhibitionRevision = Exhibition_revision::query()->find($id);
+                    $em = Exhibition_employee::query()->where('exhibition_id',$exhibition['id'])->first();
+
+                    $user=User::query()->where('id',$em['user_id'])->first();
                     $titleRExists = Exhibition_revision::query()->where('title', $request['title'])->where('id', '!=', $id)->exists();
                     if ($exhibitionRevision) {
                         DB::commit();
@@ -298,6 +299,8 @@ class ExhibitionService
                             $exhibitionR['cover_img'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['cover_img']));
                             $exhibitionR->save();
+                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
+
 
                         }
                         if (request()->hasFile('exhibition_map')) {
@@ -305,9 +308,13 @@ class ExhibitionService
                             $exhibitionR['exhibition_map'] = $img;
                             Storage::disk('public')->put($img, file_get_contents($request['exhibition_map']));
                             $exhibitionR->save();
+                            Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
+
                         }
                         DB::commit();
                         $data = $exhibitionR;
+                        Notification::send($user,new UpdateNotification($exhibition['id'],$exhibition['title']));
+
                         $message = 'Your amendment has been sent to the official in charge of the exhibition. Please wait for the modifications to be accepted. ';
                         $code = 200;
                     }

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exports\CompaniesExport;
 use App\Exports\ExhibitionCompanyVisitorrExport;
 use App\Exports\ExhibitionVisitorExport;
+use App\Models\Exhibition;
 use App\Models\Exhibition_company;
 use App\Models\Exhibition_visitor;
 use App\Models\Qr;
@@ -251,4 +252,46 @@ class reportServices
 
         }
     }
+    
+    public function financialStudyReport($exhibition_id){
+        DB::beginTransaction();
+        try {
+
+            $exhibitionVisitor = Exhibition_visitor::query()->where('exhibition_id', $exhibition_id)->count();
+            $ticketPrice =Exhibition::query()->where('id', $exhibition_id)->value('price');
+            $totalRevenue = $exhibitionVisitor * $ticketPrice;
+
+
+            $totalStandPrice =Stand::query()->where('exhibition_id', $exhibition_id)->sum('price');
+
+
+            $organizerFees = 300;
+
+
+            $netProfit = ($totalRevenue + $totalStandPrice) - $organizerFees;
+
+
+            if ($netProfit > 0) {
+                $message = "Profit: The exhibition generated a profit of " . $netProfit ;
+            } else {
+                $message = "Loss: The exhibition incurred a loss of " . abs($netProfit) ;
+            }
+            $data=[
+                'total ticket Revenue'=>$totalRevenue,
+                'totalStandPrice' =>$totalStandPrice,
+                'organizerFees'=>$organizerFees
+
+            ];
+
+            DB::commit();
+            return ['data' => $data, 'message' => $message, 'code' => 200];
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $message = 'Error.';
+            $code = 500;
+            return ['data' => [], 'message' => $message, 'code' => $e->getCode()];
+        }
+    }
+
 }
